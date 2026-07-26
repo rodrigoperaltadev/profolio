@@ -1,0 +1,6 @@
+backend: github
+repo: rodrigoperaltadev/profolio
+template: dev
+flow:
+  states: [backlog, todo, in-progress, in-review, done, blocked, dropped]
+  terminal: [done, dropped]
