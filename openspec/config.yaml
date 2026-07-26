@@ -1,0 +1,56 @@
+schema: spec-driven
+
+context: |
+  Project: profolio (git-as-CMS content/blog engine, open source, reusable/themeable)
+  Stack: Astro (decided; no scaffold yet)
+  Architecture: not yet defined — repo scaffold is the first build step
+  Testing: no framework configured yet (see rules.apply/verify below)
+  Build order: tracked as GitHub issues #1-#8 in this repo (backend: github)
+
+strict_tdd: false # no test runner exists yet; flips to true once issue #1 lands a runner
+
+testing:
+  status: not_configured
+  detected_date: "2026-07-26"
+  runner: null
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage:
+    available: false
+    command: null
+  quality:
+    linter: false
+    type_checker: false
+    formatter: false
+  note: >
+    Repo scaffold + test framework + CI coverage gate is GitHub issue #1
+    ("Repo scaffold & CI foundation"). Re-run sdd-init after that issue lands
+    to detect the real runner and flip strict_tdd on.
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Cross-reference the relevant open GitHub issue (#1-#8) driving the change
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Content model and view layer MUST be designed as separate layers (no content-type leakage into presentation)
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - The first change (issue #1) MUST establish the test runner and CI coverage gate before any feature-code change is planned
+  apply:
+    - Follow existing code patterns once established
+    tdd: false # flip to true once a test runner exists (see testing.status above)
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
