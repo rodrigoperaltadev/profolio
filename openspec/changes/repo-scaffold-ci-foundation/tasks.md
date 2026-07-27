@@ -45,11 +45,11 @@ Tracker branch `feature/repo-scaffold-ci-foundation` (draft, no-merge until all 
 
 ## Phase 3: Test Runner, Coverage, Placeholder (Unit 3 — satisfies Coverage-Enforced Test Gate, Demonstrable Placeholder)
 
-- [ ] 3.1 Add Vitest + `@vitest/coverage-v8` deps; create `vitest.config.ts` with 80% thresholds (lines/functions/branches/statements)
-- [ ] 3.2 RED: write `src/lib/scaffold/scaffold-info.test.ts` asserting `getScaffoldInfo` pass-through mapping (fails — module doesn't exist yet)
-- [ ] 3.3 GREEN: create `src/lib/scaffold/scaffold-info.ts` (JSDoc-flagged disposable) implementing `ScaffoldInfo`/`getScaffoldInfo` per design's Interfaces
-- [ ] 3.4 Verify: `npm run test` (coverage) exits 0, all four metrics ≥80% and non-vacuous
-- [ ] 3.5 Commit as one work unit; open PR3 → PR2 branch
+- [x] 3.1 Add Vitest + `@vitest/coverage-v8` deps; create `vitest.config.ts` with 80% thresholds (lines/functions/branches/statements)
+- [x] 3.2 RED: write `src/lib/scaffold/scaffold-info.test.ts` asserting `getScaffoldInfo` pass-through mapping (fails — module doesn't exist yet)
+- [x] 3.3 GREEN: create `src/lib/scaffold/scaffold-info.ts` (JSDoc-flagged disposable) implementing `ScaffoldInfo`/`getScaffoldInfo` per design's Interfaces
+- [x] 3.4 Verify: `npm run test` (coverage) exits 0, all four metrics ≥80% and non-vacuous
+- [x] 3.5 Commit as one work unit; open PR3 → PR2 branch
 
 ## Phase 4: CI Pipeline (Unit 4 — satisfies CI Pipeline Order)
 
