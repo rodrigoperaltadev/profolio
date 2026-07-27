@@ -60,11 +60,11 @@ Tracker branch `feature/repo-scaffold-ci-foundation` (draft, no-merge until all 
 
 ## Phase 5: Conventions Docs + Config Flip (Unit 5 — satisfies Documented Conventions, Mechanical vs. Guidance Split)
 
-- [ ] 5.1 Create `AGENTS.md` per design's 5-section structure: Purpose, Enforced by Linter (table matching active `eslint.config.js` rules exactly), Human Review Guidance (SRP, abstraction/DI quality, naming intent, premature abstraction — as review questions), Scaffold Note (`scaffold-info.ts` is disposable), CI Gate Reference (80% threshold, `vitest.config.ts`)
-- [ ] 5.2 Cross-check: every "mechanically enforced" line in `AGENTS.md` maps to an active rule in `eslint.config.js`; no overclaiming
-- [ ] 5.3 Modify `openspec/config.yaml`: `strict_tdd: true`, fill `testing.*` (runner, layers, coverage, quality), `apply.tdd: true`/`test_command`, `verify.test_command`/`build_command`/`coverage_threshold: 80`
-- [ ] 5.4 Commit as one work unit; open PR5 → PR4 branch (final child; cascades to tracker → main)
+- [x] 5.1 Create `AGENTS.md` per design's 5-section structure: Purpose, Enforced by Linter (table matching active `eslint.config.js` rules exactly), Human Review Guidance (SRP, abstraction/DI quality, naming intent, premature abstraction — as review questions), Scaffold Note (`scaffold-info.ts` is disposable), CI Gate Reference (80% threshold, `vitest.config.ts`)
+- [x] 5.2 Cross-check: every "mechanically enforced" line in `AGENTS.md` maps to an active rule in `eslint.config.js`; no overclaiming
+- [x] 5.3 Modify `openspec/config.yaml`: `strict_tdd: true`, fill `testing.*` (runner, layers, coverage, quality), `apply.tdd: true`/`test_command`, `verify.test_command`/`build_command`/`coverage_threshold: 80`
+- [x] 5.4 Commit as one work unit; open PR5 → PR4 branch (final child; cascades to tracker → main)
 
 ## Next Step
 
-Ready for `sdd-apply`, starting Phase 1 (PR1) on branch `feat/scaffold-foundation` off tracker `feature/repo-scaffold-ci-foundation`.
+All 5 phases complete (PR1 #11, PR2 #12, PR3 #13, PR4 #14, PR5 pending). Ready for `sdd-verify` once PR5 is opened.

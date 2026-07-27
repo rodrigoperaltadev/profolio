@@ -2,7 +2,7 @@
 //
 // This module's sole purpose is to give the Vitest coverage gate a real,
 // non-trivial unit to measure while the scaffold has no feature code yet.
-// See CLAUDE.md's Scaffold Note (added in Phase 5) for the full rationale.
+// See AGENTS.md's Scaffold Note (added in Phase 5) for the full rationale.
 //
 // DEVIATION from design.md's Interfaces pseudocode: the literal
 // `return { name: pkg.name, version: pkg.version }` pass-through has zero

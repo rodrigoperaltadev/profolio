@@ -7,7 +7,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 
 // Mechanical clean-code subset (naming, complexity, layer boundaries, DI-adjacent
 // process.env restriction). See openspec/changes/repo-scaffold-ci-foundation/design.md
-// and CLAUDE.md (added in Phase 5) for the full mechanical-vs-guidance split.
+// and AGENTS.md (added in Phase 5) for the full mechanical-vs-guidance split.
 export default tseslint.config(
   // vitest's --coverage HTML/JSON report is generated output, not source.
   { ignores: ["coverage/"] },
