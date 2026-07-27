@@ -37,11 +37,11 @@ Tracker branch `feature/repo-scaffold-ci-foundation` (draft, no-merge until all 
 
 ## Phase 2: Lint & Format Gate (Unit 2 — satisfies Lint & Format Gate, Mechanical Subset Wired)
 
-- [ ] 2.1 Add ESLint/Prettier/typescript-eslint/astro/sonarjs/boundaries deps to `package.json`
-- [ ] 2.2 Create `eslint.config.js` per design's mechanical rule set (naming-convention, complexity, cognitive-complexity, max-lines-per-function, max-lines, max-depth, max-params, sonarjs rules, no-explicit-any, explicit-function-return-type, no-floating-promises, no-restricted-syntax for `process.env`, boundaries/element-types), `eslintConfigPrettier` last
-- [ ] 2.3 Create `.prettierrc.json` (defaults) and `.prettierignore` (`dist/`, `.astro/`)
-- [ ] 2.4 Verify: `npm run lint` exits 0 on scaffold
-- [ ] 2.5 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 Add ESLint/Prettier/typescript-eslint/astro/sonarjs/boundaries deps to `package.json`
+- [x] 2.2 Create `eslint.config.js` per design's mechanical rule set (naming-convention, complexity, cognitive-complexity, max-lines-per-function, max-lines, max-depth, max-params, sonarjs rules, no-explicit-any, explicit-function-return-type, no-floating-promises, no-restricted-syntax for `process.env`, boundaries/element-types), `eslintConfigPrettier` last
+- [x] 2.3 Create `.prettierrc.json` (defaults) and `.prettierignore` (`dist/`, `.astro/`)
+- [x] 2.4 Verify: `npm run lint` exits 0 on scaffold
+- [x] 2.5 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: Test Runner, Coverage, Placeholder (Unit 3 — satisfies Coverage-Enforced Test Gate, Demonstrable Placeholder)
 
