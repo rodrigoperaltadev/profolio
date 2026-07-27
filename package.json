@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run --coverage",
+    "verify:content": "node scripts/verify-content-collections.mjs",
     "build": "astro build"
   },
   "devDependencies": {

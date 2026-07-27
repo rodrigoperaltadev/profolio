@@ -58,6 +58,21 @@ Tracker branch `feature/content-model-schema` (draft, no-merge until all childre
 - [x] 3.7 Verify: `eslint .` exits 0 clean against the existing `boundaries/element-types` rule, no exceptions added (only pre-existing plugin deprecation warnings, not errors)
 - [x] 3.8 Commit as one work unit; open PR3 → PR2 branch (final child; cascades to tracker → main)
 
+## Phase 4: Post-Merge Fix Cycle (sdd-verify CRITICAL — `getCollection()` was functionally inert)
+
+`sdd-verify` found that `astro.config.mjs` was missing `legacy: { collectionsBackwardsCompat: true }`, so `getCollection()` silently returned `[]` for both valid and malformed content despite all unit tests, typecheck, lint, and build passing. Fixed on top of PR3's branch (`feat/content-mapper-sample-content`).
+
+- [x] 4.1 Add `legacy: { collectionsBackwardsCompat: true }` to `astro.config.mjs`
+- [x] 4.2 Reproduce with a temporary `getCollection()`-calling page + `astro build`: confirm the flag alone makes `posts:1`/`projects:1` resolve, and that it also triggers Astro's folder-based auto-collection-detection warning on `src/content/mappers/` (holds only `.ts` files)
+- [x] 4.3 Fix the auto-detection collision: rename `src/content/mappers/` → `src/content/_mappers/` (leading-underscore convention Astro's own `autogenerateCollections()` already skips) — no `eslint.config.js` boundaries change needed, since `src/content/_mappers/**` still matches the existing `content` element's `src/content/**` pattern
+- [x] 4.4 Investigate and reject two Vitest-level alternatives for a real `getCollection()` proof (direct `astro:content` import under `getViteConfig()`; `astro/container`'s `experimental_AstroContainer`) — both empirically return an empty store outside a real `astro build`/`astro dev` process
+- [x] 4.5 Add `scripts/verify-content-collections.mjs` + `npm run verify:content`: build-time proof that a real page's `getCollection()` call resolves valid content (`posts:1`/`projects:1`) AND that a genuinely malformed entry fails the build (non-zero exit), with full cleanup in a `finally` block
+- [x] 4.6 Wire `verify:content` into `.github/workflows/ci.yml` as a step after `build`
+- [x] 4.7 Add narrow `eslint.config.js` override for `scripts/**/*.mjs` (Node script, not part of `tsconfig.json`'s `include`, cannot carry TS return-type syntax under plain `node` execution) — `boundaries/element-types` itself unmodified
+- [x] 4.8 Update `design.md` (Architecture Decisions, File Changes, Testing Strategy, new "Build-Time Content Proof" section) to reflect the actual shipped fix
+- [x] 4.9 Re-verify from genuinely clean state (`rm -rf .astro dist node_modules/.cache && npm ci`): `typecheck`, `lint`, `test` (13/13, 100% all 4 metrics), `build`, and `verify:content` (both proofs pass) all green
+- [x] 4.10 Commit fix on `feat/content-mapper-sample-content`, push, confirm GitHub Actions CI run concludes `success`
+
 ## Next Step
 
-Ready for `sdd-apply`, starting with PR1 (Unit 1). Auto-chain delivery strategy: no pre-apply decision needed; each unit's PR opens against the branch listed in Suggested Work Units.
+Ready for `sdd-verify` (re-verify the fix cycle before merge/archive).
