@@ -9,6 +9,8 @@ import eslintConfigPrettier from "eslint-config-prettier";
 // process.env restriction). See openspec/changes/repo-scaffold-ci-foundation/design.md
 // and CLAUDE.md (added in Phase 5) for the full mechanical-vs-guidance split.
 export default tseslint.config(
+  // vitest's --coverage HTML/JSON report is generated output, not source.
+  { ignores: ["coverage/"] },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...astro.configs["flat/recommended"],
