@@ -80,10 +80,11 @@ export default tseslint.config(
   },
   { files: ["src/config/**"], rules: { "no-restricted-syntax": "off" } },
   // typescript-eslint's typed rules require a tsconfig-backed project; this repo's
-  // own JS config files (this file included) are not part of tsconfig.json's
-  // `include`, so disable type-checked linting for them specifically.
+  // own root-level JS config files (this file included) are not part of tsconfig.json's
+  // `include`, so disable type-checked linting for them specifically. Scoped to
+  // `*.config.*` filenames only, not every .js/.mjs/.cjs in the repo.
   {
-    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+    files: ["*.config.js", "*.config.mjs", "*.config.cjs"],
     ...tseslint.configs.disableTypeChecked,
   },
   eslintConfigPrettier,
