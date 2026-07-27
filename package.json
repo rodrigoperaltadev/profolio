@@ -6,6 +6,7 @@
   "description": "Git-as-CMS content/blog engine (open source, reusable/themeable).",
   "license": "MIT",
   "scripts": {
+    "pretypecheck": "astro sync",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run --coverage",
