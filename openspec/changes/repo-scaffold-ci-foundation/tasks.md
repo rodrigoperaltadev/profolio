@@ -53,10 +53,10 @@ Tracker branch `feature/repo-scaffold-ci-foundation` (draft, no-merge until all 
 
 ## Phase 4: CI Pipeline (Unit 4 — satisfies CI Pipeline Order)
 
-- [ ] 4.1 Create `.github/workflows/ci.yml`: single `quality-gate` job — checkout → setup-node (npm cache) → `npm ci` → typecheck → lint → test+coverage → build, fail-fast
-- [ ] 4.2 Gate-proof (manual, not committed): temporarily add a function exceeding `complexity`/`max-lines-per-function`; confirm `npm run lint` fails locally; then remove it
-- [ ] 4.3 Verify: full pipeline green on CI for the scaffold-only state
-- [ ] 4.4 Commit as one work unit; open PR4 → PR3 branch
+- [x] 4.1 Create `.github/workflows/ci.yml`: single `quality-gate` job — checkout → setup-node (npm cache) → `npm ci` → typecheck → lint → test+coverage → build, fail-fast
+- [x] 4.2 Gate-proof (manual, not committed): temporarily add a function exceeding `complexity`/`max-lines-per-function`; confirm `npm run lint` fails locally; then remove it
+- [x] 4.3 Verify: full pipeline green on CI for the scaffold-only state
+- [x] 4.4 Commit as one work unit; open PR4 → PR3 branch
 
 ## Phase 5: Conventions Docs + Config Flip (Unit 5 — satisfies Documented Conventions, Mechanical vs. Guidance Split)
 
