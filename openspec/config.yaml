@@ -4,30 +4,33 @@ context: |
   Project: profolio (git-as-CMS content/blog engine, open source, reusable/themeable)
   Stack: Astro (decided; no scaffold yet)
   Architecture: not yet defined — repo scaffold is the first build step
-  Testing: no framework configured yet (see rules.apply/verify below)
+  Testing: Vitest + @vitest/coverage-v8, 80% threshold (see rules.apply/verify below)
   Build order: tracked as GitHub issues #1-#8 in this repo (backend: github)
 
-strict_tdd: false # no test runner exists yet; flips to true once issue #1 lands a runner
+strict_tdd: true # flipped in Phase 5 (repo-scaffold-ci-foundation, PR5) — Vitest + coverage gate now exist
 
 testing:
-  status: not_configured
-  detected_date: "2026-07-26"
-  runner: null
+  status: configured
+  detected_date: "2026-07-27"
+  runner: vitest
   layers:
-    unit: false
+    unit: true
     integration: false
     e2e: false
   coverage:
-    available: false
-    command: null
+    available: true
+    tool: "@vitest/coverage-v8"
+    threshold: 80
+    command: "npm run test"
   quality:
-    linter: false
-    type_checker: false
-    formatter: false
+    linter: eslint
+    type_checker: tsc
+    formatter: prettier
   note: >
-    Repo scaffold + test framework + CI coverage gate is GitHub issue #1
-    ("Repo scaffold & CI foundation"). Re-run sdd-init after that issue lands
-    to detect the real runner and flip strict_tdd on.
+    Repo scaffold + test framework + CI coverage gate landed in
+    repo-scaffold-ci-foundation (issues #1-#2). Unit layer covered via
+    Vitest, co-located `.test.ts` files; integration/e2e deferred to the
+    change that introduces a real content model and view layer.
 
 rules:
   proposal:
@@ -46,11 +49,11 @@ rules:
     - The first change (issue #1) MUST establish the test runner and CI coverage gate before any feature-code change is planned
   apply:
     - Follow existing code patterns once established
-    tdd: false # flip to true once a test runner exists (see testing.status above)
-    test_command: ""
+    tdd: true
+    test_command: "npm run test"
   verify:
-    test_command: ""
-    build_command: ""
-    coverage_threshold: 0
+    test_command: "npm run test"
+    build_command: "npm run build"
+    coverage_threshold: 80
   archive:
     - Warn before merging destructive deltas

@@ -2,7 +2,7 @@
 
 ## Technical Approach
 
-One combined change, root-level config (standard Node/Astro tooling discovery), a single CI job with fail-fast sequential steps, and one disposable placeholder module so the coverage gate has something real to compute against. Tool choices (ESLint flat config + typescript-eslint `strict-type-checked` + `eslint-plugin-astro` + Prettier; Vitest + `@vitest/coverage-v8`; native Vitest threshold gate) are locked per `exploration.md` and not revisited here. This design fixes the concrete shape: file layout, CI step order, placeholder content, the mechanical ESLint rule set, and `CLAUDE.md` structure.
+One combined change, root-level config (standard Node/Astro tooling discovery), a single CI job with fail-fast sequential steps, and one disposable placeholder module so the coverage gate has something real to compute against. Tool choices (ESLint flat config + typescript-eslint `strict-type-checked` + `eslint-plugin-astro` + Prettier; Vitest + `@vitest/coverage-v8`; native Vitest threshold gate) are locked per `exploration.md` and not revisited here. This design fixes the concrete shape: file layout, CI step order, placeholder content, the mechanical ESLint rule set, and `AGENTS.md` structure.
 
 ## Architecture Decisions
 
@@ -26,7 +26,7 @@ One combined change, root-level config (standard Node/Astro tooling discovery), 
 | `.github/workflows/ci.yml` | Create | Single `quality-gate` job, 5 steps |
 | `src/lib/scaffold/scaffold-info.ts` | Create | Disposable placeholder module |
 | `src/lib/scaffold/scaffold-info.test.ts` | Create | Unit test proving the coverage gate is real |
-| `CLAUDE.md` | Create | Mechanical vs. guidance conventions |
+| `AGENTS.md` | Create | Mechanical vs. guidance conventions (cross-tool standard — read natively by Claude Code, Cursor, OpenCode, and 30+ other agents; not tool-specific like `CLAUDE.md`) |
 | `openspec/config.yaml` | Modify | `strict_tdd: true`, fill `testing.*`, `verify.test_command`/`coverage_threshold` |
 
 ## ESLint Config Structure (mechanical clean-code subset)
@@ -121,7 +121,7 @@ export function getScaffoldInfo(pkg: { name: string; version: string }): Scaffol
 | E2E | N/A | Deferred |
 | Gate proof | A sample violation fails CI | Manual PR during apply: add one function exceeding `complexity`/`max-lines-per-function` — expect lint step to fail |
 
-## CLAUDE.md Structure
+## AGENTS.md Structure
 
 1. **Purpose** — one paragraph: this file is binding for contributors and AI agents.
 2. **Enforced by Linter (mechanical)** — table: rule id → what it catches → tool (naming-convention, complexity, cognitive-complexity, max-lines-per-function, max-lines, max-depth, max-params, no-duplicate-string, no-identical-functions, no-explicit-any, no-floating-promises, no-restricted-syntax for `process.env`, boundaries/element-types).

@@ -8,27 +8,27 @@ Documents the project's clean-code/SOLID conventions and wires the mechanically-
 
 ### Requirement: Documented Conventions
 
-The system MUST provide a `CLAUDE.md` file documenting naming conventions, Single Responsibility Principle (SRP) guidance, function/file complexity limits, and dependency-injection (DI) conventions.
+The system MUST provide a `AGENTS.md` file documenting naming conventions, Single Responsibility Principle (SRP) guidance, function/file complexity limits, and dependency-injection (DI) conventions.
 
 #### Scenario: Conventions are discoverable
 
-- GIVEN a contributor opens `CLAUDE.md`
+- GIVEN a contributor opens `AGENTS.md`
 - WHEN they read it
 - THEN they find documented guidance for naming, SRP, complexity limits, and DI conventions
 
 ### Requirement: Mechanical vs. Guidance Split
 
-`CLAUDE.md` MUST explicitly label each documented convention as either "mechanically enforced by linter" or "guidance only (requires human review)", and MUST NOT claim linter enforcement for a rule that is not actually wired into `eslint.config.js`.
+`AGENTS.md` MUST explicitly label each documented convention as either "mechanically enforced by linter" or "guidance only (requires human review)", and MUST NOT claim linter enforcement for a rule that is not actually wired into `eslint.config.js`.
 
 #### Scenario: Split is explicit and accurate
 
 - GIVEN the mechanical ESLint rules active in `eslint.config.js` (e.g. naming-convention, complexity, max-lines-per-function, relevant sonarjs/import-boundary rules)
-- WHEN cross-checked against `CLAUDE.md`'s "mechanically enforced" list
+- WHEN cross-checked against `AGENTS.md`'s "mechanically enforced" list
 - THEN every rule listed as mechanically enforced has a corresponding active ESLint rule, and every guidance-only item is not claimed as enforced
 
 #### Scenario: Non-mechanical SOLID guidance is not overclaimed
 
-- GIVEN a reader checks `CLAUDE.md` for true SRP, abstraction quality, or DI design-quality claims
+- GIVEN a reader checks `AGENTS.md` for true SRP, abstraction quality, or DI design-quality claims
 - WHEN they compare it against the ESLint rule set
 - THEN these items are labeled guidance-only, not mechanically enforced
 
