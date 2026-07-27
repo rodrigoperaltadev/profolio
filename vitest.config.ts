@@ -1,13 +1,12 @@
-import { defineConfig } from "vitest/config";
+/// <reference types="vitest/config" />
+import { getViteConfig } from "astro/config";
 
-// DEVIATION from design.md: design.md's File Changes table specifies
-// `getViteConfig()` (Astro's Vitest helper) for this file. That helper reads
-// `astro.config.mjs`, which does not exist yet — Astro itself is not
-// installed or scaffolded in this repo (see openspec issue #1, this is the
-// first build step). Using it here would throw at config-load time. Falling
-// back to plain Vitest `defineConfig` instead; revisit once the Astro
-// scaffold change lands and swap this for `getViteConfig()` per design.
-export default defineConfig({
+// Resolves the documented deviation from repo-scaffold-ci-foundation:
+// `astro.config.mjs` now exists (see openspec issue #3), so `getViteConfig()`
+// can read it. This also merges Astro's own Vite plugins (including the
+// content-collections virtual-module resolver), which is what makes
+// `astro:content` importable from test files at all.
+export default getViteConfig({
   test: {
     coverage: {
       provider: "v8",
