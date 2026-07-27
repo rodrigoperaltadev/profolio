@@ -1,0 +1,17 @@
+{
+  "name": "profolio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Git-as-CMS content/blog engine (open source, reusable/themeable).",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"lint: not wired yet, see openspec issue #1 Phase 2\" && exit 0",
+    "test": "echo \"test: not wired yet, see openspec issue #1 Phase 3\" && exit 0",
+    "build": "echo \"build: not wired yet, see openspec issue #1 Phase 4\" && exit 0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

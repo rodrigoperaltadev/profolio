@@ -30,10 +30,10 @@ Tracker branch `feature/repo-scaffold-ci-foundation` (draft, no-merge until all 
 
 ## Phase 1: Language/Package Foundation (Unit 1 — satisfies TypeScript Strict Compilation)
 
-- [ ] 1.1 Create `package.json`: name, version, scripts `typecheck`/`lint`/`test`/`build` (contract names, verbatim)
-- [ ] 1.2 Create `tsconfig.json`: `strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`
-- [ ] 1.3 Verify: `npm run typecheck` exits 0 on empty scaffold
-- [ ] 1.4 Commit as one work unit; open PR1 → tracker branch
+- [x] 1.1 Create `package.json`: name, version, scripts `typecheck`/`lint`/`test`/`build` (contract names, verbatim)
+- [x] 1.2 Create `tsconfig.json`: `strict: true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`
+- [x] 1.3 Verify: `npm run typecheck` exits 0 on empty scaffold
+- [x] 1.4 Commit as one work unit; open PR1 → tracker branch
 
 ## Phase 2: Lint & Format Gate (Unit 2 — satisfies Lint & Format Gate, Mechanical Subset Wired)
 
