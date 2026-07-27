@@ -11,7 +11,7 @@ Profolio has no scaffold: no `package.json`, `tsconfig.json`, lint/format config
 ### In Scope
 - TypeScript strict configuration (`tsconfig.json`, `strict: true` + recommended strictness flags)
 - ESLint (flat config) + typescript-eslint (`strict-type-checked`) + `eslint-plugin-astro` + Prettier
-- Vitest + `@vitest/coverage-v8`, with coverage thresholds enforced natively as the CI gate
+- Vitest + `@vitest/coverage-v8`, with coverage thresholds (80% lines/functions/branches/statements) enforced natively as the CI gate
 - One disposable placeholder module + unit test, solely to make the coverage gate demonstrable on an otherwise-empty scaffold
 - GitHub Actions CI workflow: install → typecheck → lint → test+coverage → build
 - `CLAUDE.md`: documents naming, SRP, complexity limits, DI conventions — split into mechanically-enforced rules (linter) vs. documented review guidance (semantic judgment calls)
@@ -66,7 +66,7 @@ All changes are additive config/tooling files with no runtime feature code. Reve
 ## Success Criteria
 
 - [ ] CI runs successfully on the scaffold with only the placeholder module present
-- [ ] A PR introducing code without adequate coverage fails the CI gate
+- [ ] A PR introducing code below 80% coverage fails the CI gate
 - [ ] `eslint .` passes clean on the scaffold
 - [ ] `CLAUDE.md` documents naming, SRP, complexity, and DI conventions, marking mechanical vs. guidance-only
 - [ ] A sample mechanical violation (e.g., a function exceeding complexity/line limits) fails CI
