@@ -48,14 +48,15 @@ Tracker branch `feature/content-model-schema` (draft, no-merge until all childre
 
 ## Phase 3: Mapper Dispatcher, Sample Content, Build Proof (Unit 3 — satisfies Per-Collection Mapper Functions, New Collections Require No View-Layer Control Flow, Folder-Per-Collection File Layout, Build-Time Schema Validation)
 
-- [ ] 3.1 RED: write `src/content/mappers/to-content-entry.test.ts` — fixture-based tests asserting `toContentEntry()` dispatches `posts`/`projects` fixtures to the correct mapper and each output satisfies `ContentEntry` — fails, module doesn't exist
-- [ ] 3.2 GREEN: create `src/content/mappers/to-content-entry.ts` — dispatch-table `mappers` object + `toContentEntry()`, per design's Interfaces (zero new branches when a 3rd collection is added)
-- [ ] 3.3 Create `src/content/posts/hello-world.md` sample entry (title/date/tags/draft/body)
-- [ ] 3.4 Create `src/content/projects/profolio.md` sample entry (name/stack/link/date/draft/body)
-- [ ] 3.5 Verify: `npm run test` (coverage) exits 0, all four metrics ≥80% non-vacuous across `schemas`/`validate-entry`/mapper suites
-- [ ] 3.6 Verify: `npm run build` succeeds with both sample files present, proving `astro:content` resolves via `getViteConfig()` end-to-end
-- [ ] 3.7 Verify: `eslint .` passes clean against the existing `boundaries/element-types` rule, no exceptions added
-- [ ] 3.8 Commit as one work unit; open PR3 → PR2 branch (final child; cascades to tracker → main)
+- [x] 3.1 RED: write `src/content/mappers/to-content-entry.test.ts` — fixture-based tests asserting `toContentEntry()` dispatches `posts`/`projects` fixtures to the correct mapper and each output satisfies `ContentEntry` — fails, module doesn't exist
+- [x] 3.2 GREEN: create `src/content/mappers/to-content-entry.ts` — dispatch-table `mappers` object + `toContentEntry()`, per design's Interfaces (zero new branches when a 3rd collection is added). DEVIATION: `toContentEntry()`'s generic dispatch (`mappers[entry.collection]`) needed a documented `as Mapper<C>` cast — TS cannot statically unify a generic-indexed object-literal lookup back to `Mapper<C>` on its own; each `mappers` entry itself stays fully typed per collection, so this is a TS-inference-limit workaround, not a real type-safety gap
+- [x] 3.3 Create `src/content/posts/hello-world.md` sample entry (title/date/tags/draft/body)
+- [x] 3.4 Create `src/content/projects/profolio.md` sample entry (name/stack/link/date/draft/body)
+- [x] [gap fix] Wire `package.json`'s `build` script to `astro build` (was still the previous change's placeholder stub); also added `dist/` to `.gitignore` since a real build now produces output
+- [x] 3.5 Verify: `npm run test` (coverage) exits 0, all four metrics 100% non-vacuous across `schemas`/`validate-entry`/mapper suites (13 tests, 4 files)
+- [x] 3.6 Verify: `npm run build` succeeds with both sample files present after `rm -rf .astro dist`, proving `astro:content` resolves via `getViteConfig()` end-to-end from a genuinely clean state
+- [x] 3.7 Verify: `eslint .` exits 0 clean against the existing `boundaries/element-types` rule, no exceptions added (only pre-existing plugin deprecation warnings, not errors)
+- [x] 3.8 Commit as one work unit; open PR3 → PR2 branch (final child; cascades to tracker → main)
 
 ## Next Step
 
