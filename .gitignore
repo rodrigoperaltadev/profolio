@@ -3,3 +3,4 @@ HANDOFF.md
 node_modules/
 coverage/
 .astro/
+dist/

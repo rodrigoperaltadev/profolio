@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run --coverage",
-    "build": "echo \"build: not wired yet, see openspec issue #1 Phase 4\" && exit 0"
+    "verify:content": "node scripts/verify-content-collections.mjs",
+    "build": "astro build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

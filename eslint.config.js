@@ -90,6 +90,28 @@ export default tseslint.config(
     files: ["*.config.js", "*.config.mjs", "*.config.cjs"],
     ...tseslint.configs.disableTypeChecked,
   },
+  // `scripts/**` are standalone Node tooling (e.g. the build-time content-
+  // collection proof), intentionally outside tsconfig.json's `include` since
+  // they aren't application source — same rationale as the root `*.config.*`
+  // override above. They also run directly under Node (not bundled), so the
+  // Node/Web globals they use are declared explicitly here rather than
+  // pulling in a new `globals` dependency for two identifiers. Return-type
+  // annotations are plain-JS-illegal (these files execute via `node`, not
+  // `tsc`/a bundler), so `explicit-function-return-type` is off here only —
+  // the rest of the mechanical rule set (naming, complexity, no-explicit-any,
+  // boundaries) still applies.
+  {
+    files: ["scripts/**/*.mjs"],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: { console: "readonly", URL: "readonly" },
+    },
+    rules: {
+      ...tseslint.configs.disableTypeChecked.rules,
+      "@typescript-eslint/explicit-function-return-type": "off",
+    },
+  },
   // `src/env.d.ts` uses Astro's standard triple-slash reference to pull in
   // `.astro/types.d.ts` (ambient `astro:content` module + generated
   // collection types). There is no `import`-style equivalent for ambient
