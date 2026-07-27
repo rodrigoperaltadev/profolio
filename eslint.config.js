@@ -9,8 +9,9 @@ import eslintConfigPrettier from "eslint-config-prettier";
 // process.env restriction). See openspec/changes/repo-scaffold-ci-foundation/design.md
 // and AGENTS.md (added in Phase 5) for the full mechanical-vs-guidance split.
 export default tseslint.config(
-  // vitest's --coverage HTML/JSON report is generated output, not source.
-  { ignores: ["coverage/"] },
+  // vitest's --coverage HTML/JSON report and `astro sync`'s generated content
+  // types are generated output, not source.
+  { ignores: ["coverage/", ".astro/"] },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...astro.configs["flat/recommended"],
@@ -88,6 +89,15 @@ export default tseslint.config(
   {
     files: ["*.config.js", "*.config.mjs", "*.config.cjs"],
     ...tseslint.configs.disableTypeChecked,
+  },
+  // `src/env.d.ts` uses Astro's standard triple-slash reference to pull in
+  // `.astro/types.d.ts` (ambient `astro:content` module + generated
+  // collection types). There is no `import`-style equivalent for ambient
+  // `.d.ts` declaration merging, so this is the one file where the rule
+  // must be off rather than a project-wide exception.
+  {
+    files: ["src/env.d.ts"],
+    rules: { "@typescript-eslint/triple-slash-reference": "off" },
   },
   eslintConfigPrettier,
 );

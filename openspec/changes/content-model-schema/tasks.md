@@ -37,14 +37,14 @@ Tracker branch `feature/content-model-schema` (draft, no-merge until all childre
 
 ## Phase 2: Content Schema & Shared Contract Layer (Unit 2 — satisfies Content Collections Configuration, Posts/Projects Schema Shape, Shared Entry Contract Type)
 
-- [ ] 2.1 RED: write `src/content/schemas.test.ts` — `postsSchema`/`projectsSchema` happy path (valid fields, `draft` defaults `false`) and failure path (missing `title`/`link`) via `.safeParse()` — fails, module doesn't exist
-- [ ] 2.2 GREEN: create `src/content/schemas.ts` — `postsSchema`/`projectsSchema`, standalone `zod` import (no `astro:content`), per design's Interfaces
-- [ ] 2.3 RED: write `src/content/validate-entry.test.ts` — `parseEntry()` ok branch (valid input) and error branch (invalid input) — fails, module doesn't exist
-- [ ] 2.4 GREEN: create `src/content/validate-entry.ts` — `parseEntry()` wrapper returning `ParseResult<T>`, per design's Interfaces
-- [ ] 2.5 Create `src/content/entry.ts` — `ContentEntry` shared display-shape type (no collection-specific field names)
-- [ ] 2.6 Create `src/content/config.ts` — `defineCollection` + `collections` export wiring `schemas.ts` (declarative, no dedicated test per design's Testing Strategy)
-- [ ] 2.7 Verify: `npm run test` (coverage) exits 0 on `schemas.test.ts` + `validate-entry.test.ts`
-- [ ] 2.8 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 RED: write `src/content/schemas.test.ts` — `postsSchema`/`projectsSchema` happy path (valid fields, `draft` defaults `false`) and failure path (missing `title`/`link`) via `.safeParse()` — fails, module doesn't exist
+- [x] 2.2 GREEN: create `src/content/schemas.ts` — `postsSchema`/`projectsSchema`, standalone `zod` import (no `astro:content`), per design's Interfaces
+- [x] 2.3 RED: write `src/content/validate-entry.test.ts` — `parseEntry()` ok branch (valid input) and error branch (invalid input) — fails, module doesn't exist
+- [x] 2.4 GREEN: create `src/content/validate-entry.ts` — `parseEntry()` wrapper returning `ParseResult<T>`, per design's Interfaces
+- [x] 2.5 Create `src/content/entry.ts` — `ContentEntry` shared display-shape type (no collection-specific field names)
+- [x] 2.6 Create `src/content.config.ts` — `defineCollection` + `collections` export wiring `schemas.ts` (declarative, no dedicated test per design's Testing Strategy). DEVIATION: design.md said `src/content/config.ts`; Astro 7 requires the top-level path `src/content.config.ts` (`LegacyContentConfigError` otherwise) — see apply-progress for details
+- [x] 2.7 Verify: `npm run test` (coverage) exits 0 on `schemas.test.ts` + `validate-entry.test.ts`, 100% non-vacuous on all 4 metrics; also verified `npm run typecheck` and `npm run lint` exit 0 (required `src/env.d.ts` + `.astro/` gitignore/eslint-ignore additions, not explicitly listed in this task but necessary for the codebase to compile — see apply-progress)
+- [x] 2.8 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: Mapper Dispatcher, Sample Content, Build Proof (Unit 3 — satisfies Per-Collection Mapper Functions, New Collections Require No View-Layer Control Flow, Folder-Per-Collection File Layout, Build-Time Schema Validation)
 
