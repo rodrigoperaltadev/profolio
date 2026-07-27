@@ -2,3 +2,4 @@ HANDOFF.md
 .atl/
 node_modules/
 coverage/
+.astro/
