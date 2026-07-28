@@ -40,13 +40,13 @@ Tracker branch `feature/publishing-layer` (draft, no-merge until all children la
 
 ## Phase 2: Port Interface, Sanitize-Error, Frontmatter Serializer (Unit 2 — satisfies ContentWriter Port Contract, Sanitized Error Handling)
 
-- [ ] 2.1 Create `src/publishing/content-writer.ts` — `Collection`, `WriteEntryInput`, `WriteError`, `WriteResult`, `ContentWriter` interface, verbatim per design's Interfaces/Contracts. Declarative type-only file — no dedicated test (same "zero-branch file" idiom noted for `entry.ts` in the content-model-schema design; TS exhaustiveness of the `WriteError` union is compiler-enforced, not re-tested)
-- [ ] 2.2 RED: write `src/publishing/sanitize-error.test.ts` — secret present in message → replaced with `[REDACTED]`; secret absent/empty secrets list → message passes through unchanged — fails, module doesn't exist
-- [ ] 2.3 GREEN: create `src/publishing/sanitize-error.ts` — `sanitizeError(err, secrets)`, literal substring redaction, per design's Interfaces/Contracts
-- [ ] 2.4 RED: write `src/publishing/frontmatter.test.ts` — one fixture per collection (`posts`, `projects`) exercising all four primitive shapes (`string`, `boolean`, `Date`, `string[]`); assert `buildMarkdownFile()`'s output re-parses and round-trips through `postsSchema`/`projectsSchema` `.safeParse()` successfully — fails, module doesn't exist
-- [ ] 2.5 GREEN: create `src/publishing/frontmatter.ts` — `buildMarkdownFile(frontmatter, body)`, minimal hand-rolled YAML serializer scoped to the four shapes actually used
-- [ ] 2.6 Verify: `npm run test` (coverage) exits 0 on `sanitize-error.test.ts` + `frontmatter.test.ts`, all four metrics non-vacuous; `npm run typecheck` and `npm run lint` exit 0
-- [ ] 2.7 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 Create `src/publishing/content-writer.ts` — `Collection`, `WriteEntryInput`, `WriteError`, `WriteResult`, `ContentWriter` interface, verbatim per design's Interfaces/Contracts. Declarative type-only file — no dedicated test (same "zero-branch file" idiom noted for `entry.ts` in the content-model-schema design; TS exhaustiveness of the `WriteError` union is compiler-enforced, not re-tested)
+- [x] 2.2 RED: write `src/publishing/sanitize-error.test.ts` — secret present in message → replaced with `[REDACTED]`; secret absent/empty secrets list → message passes through unchanged — fails, module doesn't exist
+- [x] 2.3 GREEN: create `src/publishing/sanitize-error.ts` — `sanitizeError(err, secrets)`, literal substring redaction, per design's Interfaces/Contracts
+- [x] 2.4 RED: write `src/publishing/frontmatter.test.ts` — one fixture per collection (`posts`, `projects`) exercising all four primitive shapes (`string`, `boolean`, `Date`, `string[]`); assert `buildMarkdownFile()`'s output re-parses and round-trips through `postsSchema`/`projectsSchema` `.safeParse()` successfully — fails, module doesn't exist
+- [x] 2.5 GREEN: create `src/publishing/frontmatter.ts` — `buildMarkdownFile(frontmatter, body)`, minimal hand-rolled YAML serializer scoped to the four shapes actually used
+- [x] 2.6 Verify: `npm run test` (coverage) exits 0 on `sanitize-error.test.ts` + `frontmatter.test.ts`, all four metrics non-vacuous; `npm run typecheck` and `npm run lint` exit 0
+- [x] 2.7 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: GithubContentWriterAdapter (Unit 3 — satisfies GithubContentWriterAdapter Request Shape, Validation Before Write, SHA-Conflict Handling, No Ambient Token Access in the Adapter, No Real Network Calls in Automated Tests)
 
