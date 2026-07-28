@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const pagesDir = `${rootDir}/src/pages`;
 const probePagePath = `${pagesDir}/content-proof.astro`;
-const probeDistPath = `${rootDir}/dist/content-proof/index.html`;
+const probeDistPath = `${rootDir}/dist/client/content-proof/index.html`;
 // NOTE: must NOT start with "_" — Astro's own content glob ignores
 // underscore-prefixed entries entirely (silently, same failure shape as the
 // bug this proof exists to catch), so an underscore-prefixed malformed
@@ -32,6 +32,7 @@ const malformedEntryPath = `${rootDir}/src/content/posts/content-proof-malformed
 const pagesDirPreexisted = existsSync(pagesDir);
 
 const PROBE_PAGE_SOURCE = `---
+export const prerender = true;
 import { getCollection } from "astro:content";
 const posts = await getCollection("posts");
 const projects = await getCollection("projects");
