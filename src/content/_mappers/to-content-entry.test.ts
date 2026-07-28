@@ -11,6 +11,7 @@ const postsFixture: CollectionEntry<"posts"> = {
     date: new Date("2026-07-27"),
     tags: ["meta", "profolio"],
     draft: false,
+    deleted: false,
   },
 };
 
@@ -24,6 +25,7 @@ const projectsFixture: CollectionEntry<"projects"> = {
     link: "https://github.com/rodrigoperaltadev/profolio",
     date: new Date("2026-07-27"),
     draft: false,
+    deleted: false,
   },
 };
 
