@@ -31,6 +31,7 @@ export default tseslint.config(
         { type: "view", pattern: "src/presentation/**" },
         { type: "config", pattern: "src/config/**" },
         { type: "lib", pattern: "src/lib/**" },
+        { type: "publishing", pattern: "src/publishing/**" },
       ],
     },
     rules: {
@@ -76,6 +77,7 @@ export default tseslint.config(
             { from: "view", allow: ["lib", "content"] },
             { from: "lib", allow: ["lib"] },
             { from: "config", allow: ["lib"] },
+            { from: "publishing", allow: ["lib", "content", "config"] },
           ],
         },
       ],
