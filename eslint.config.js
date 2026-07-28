@@ -32,6 +32,17 @@ export default tseslint.config(
         { type: "config", pattern: "src/config/**" },
         { type: "lib", pattern: "src/lib/**" },
         { type: "publishing", pattern: "src/publishing/**" },
+        { type: "admin", pattern: "src/pages/admin/**" },
+        // No `middleware` element for `src/middleware.ts`: eslint-plugin-boundaries
+        // element patterns match folders, not individual files (its own runtime
+        // warning confirms this) — a bare-file pattern never actually classifies
+        // the file, so `create()` (see node_modules/eslint-plugin-boundaries/
+        // dist/Rules/Support/DependencyRule.js) skips it as unmatched and no
+        // restriction is ever applied. Verified empirically during apply: setting
+        // `{ from: "middleware", allow: [] }` (deny everything) still produced
+        // zero lint errors for its `./config/*` imports. Declaring the element
+        // would imply a protection that doesn't exist — see design.md's Open
+        // Question.
       ],
     },
     rules: {
@@ -78,6 +89,7 @@ export default tseslint.config(
             { from: "lib", allow: ["lib"] },
             { from: "config", allow: ["lib", "publishing"] },
             { from: "publishing", allow: ["lib", "content", "config"] },
+            { from: "admin", allow: ["content", "publishing", "config", "lib"] },
           ],
         },
       ],
@@ -107,7 +119,15 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
     languageOptions: {
       ...tseslint.configs.disableTypeChecked.languageOptions,
-      globals: { console: "readonly", URL: "readonly" },
+      globals: {
+        console: "readonly",
+        URL: "readonly",
+        Buffer: "readonly",
+        process: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+      },
     },
     rules: {
       ...tseslint.configs.disableTypeChecked.rules,
