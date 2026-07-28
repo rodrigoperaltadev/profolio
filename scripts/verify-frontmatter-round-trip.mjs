@@ -31,7 +31,7 @@ import { createServer } from "vite";
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const pagesDir = `${rootDir}/src/pages`;
 const probePagePath = `${pagesDir}/frontmatter-round-trip-proof.astro`;
-const probeDistPath = `${rootDir}/dist/frontmatter-round-trip-proof/index.html`;
+const probeDistPath = `${rootDir}/dist/client/frontmatter-round-trip-proof/index.html`;
 // NOTE: must NOT start with "_" — see verify-content-collections.mjs's note;
 // Astro's content glob silently ignores underscore-prefixed entries.
 const entrySlug = "frontmatter-round-trip-proof";
@@ -52,6 +52,7 @@ const SAMPLE_FRONTMATTER = {
 const SAMPLE_BODY = "Body written by the real buildMarkdownFile() output.";
 
 const PROBE_PAGE_SOURCE = `---
+export const prerender = true;
 import { getCollection } from "astro:content";
 const posts = await getCollection("posts");
 // Legacy \`type: "content"\` collections keep the file extension in \`id\`
