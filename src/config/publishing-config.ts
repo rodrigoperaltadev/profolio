@@ -25,3 +25,17 @@ export function loadPublishingConfig(): PublishingConfig {
 }
 // Composition (future caller, e.g. issue #5):
 //   const writer: ContentWriter = new GithubContentWriterAdapter(loadPublishingConfig());
+
+// Non-throwing counterpart to `loadPublishingConfig()` — see design.md's
+// "Non-throwing config check" decision. Lets `createContentWriter()` branch
+// on configuration state without paying for a try/catch around a function
+// that builds (and would discard) a full `PublishingConfig`.
+export function isPublishingConfigured(): boolean {
+  return Boolean(
+    process.env.GITHUB_TOKEN && process.env.GITHUB_REPO_OWNER && process.env.GITHUB_REPO_NAME,
+  );
+}
+
+export function loadAdminAccessToken(): string | undefined {
+  return process.env.ADMIN_ACCESS_TOKEN;
+}

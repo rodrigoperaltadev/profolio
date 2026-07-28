@@ -42,17 +42,17 @@ Tracker branch `feature/admin-ui` (draft, no-merge until all children land). Cas
 
 ## Phase 2: LocalFsContentWriterAdapter + Composition-Root Factory (Unit 2 — satisfies LocalFsContentWriterAdapter Implements ContentWriter, Non-Throwing Publishing Configuration Check, Composition-Root Adapter Selection Factory, Validation Before Write [MODIFIED])
 
-- [ ] 2.1 RED: `src/publishing/content-path.test.ts` — `buildContentPath("posts","hello-world")` → `src/content/posts/hello-world.md` (and for `projects`) — fails, module doesn't exist
-- [ ] 2.2 GREEN: create `src/publishing/content-path.ts`; refactor `github-content-writer-adapter.ts` to import it, remove its private copy; confirm the existing adapter test suite still passes unchanged
-- [ ] 2.3 RED: `src/publishing/local-fs-content-writer-adapter.test.ts` — `vi.mock("node:fs/promises")`: create happy path, create-on-existing → conflict, edit happy path, edit-on-missing → not-found, invalid frontmatter → validation with zero fs calls, unexpected fs error → sanitized `api-error` — fails, module doesn't exist
-- [ ] 2.4 GREEN: create `src/publishing/local-fs-content-writer-adapter.ts` — `LocalFsContentWriterAdapter implements ContentWriter`, per design's Interfaces/Contracts
-- [ ] 2.5 RED: extend `src/config/publishing-config.test.ts` — `isPublishingConfigured()` true/false branches; `loadAdminAccessToken()` reads `process.env.ADMIN_ACCESS_TOKEN` — fails, functions don't exist
-- [ ] 2.6 GREEN: add `isPublishingConfigured()` and `loadAdminAccessToken()` to `src/config/publishing-config.ts`
-- [ ] 2.7 RED: `src/config/content-writer-factory.test.ts` — mocked `isPublishingConfigured` true/false → `instanceof GithubContentWriterAdapter` / `instanceof LocalFsContentWriterAdapter` — fails, module doesn't exist
-- [ ] 2.8 GREEN: create `src/config/content-writer-factory.ts` — `createContentWriter()`
-- [ ] 2.9 Add `config -> publishing` to `boundaries/element-types` rules in `eslint.config.js`
-- [ ] 2.10 Verify: `npm run test` (coverage) exits 0 across all four new/modified suites, all metrics ≥80%; `npm run typecheck` and `npm run lint` exit 0, boundary holds
-- [ ] 2.11 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 RED: `src/publishing/content-path.test.ts` — `buildContentPath("posts","hello-world")` → `src/content/posts/hello-world.md` (and for `projects`) — fails, module doesn't exist
+- [x] 2.2 GREEN: create `src/publishing/content-path.ts`; refactor `github-content-writer-adapter.ts` to import it, remove its private copy; confirm the existing adapter test suite still passes unchanged
+- [x] 2.3 RED: `src/publishing/local-fs-content-writer-adapter.test.ts` — `vi.mock("node:fs/promises")`: create happy path, create-on-existing → conflict, edit happy path, edit-on-missing → not-found, invalid frontmatter → validation with zero fs calls, unexpected fs error → sanitized `api-error` — fails, module doesn't exist
+- [x] 2.4 GREEN: create `src/publishing/local-fs-content-writer-adapter.ts` — `LocalFsContentWriterAdapter implements ContentWriter`, per design's Interfaces/Contracts
+- [x] 2.5 RED: extend `src/config/publishing-config.test.ts` — `isPublishingConfigured()` true/false branches; `loadAdminAccessToken()` reads `process.env.ADMIN_ACCESS_TOKEN` — fails, functions don't exist
+- [x] 2.6 GREEN: add `isPublishingConfigured()` and `loadAdminAccessToken()` to `src/config/publishing-config.ts`
+- [x] 2.7 RED: `src/config/content-writer-factory.test.ts` — mocked `isPublishingConfigured` true/false → `instanceof GithubContentWriterAdapter` / `instanceof LocalFsContentWriterAdapter` — fails, module doesn't exist
+- [x] 2.8 GREEN: create `src/config/content-writer-factory.ts` — `createContentWriter()`
+- [x] 2.9 Add `config -> publishing` to `boundaries/element-types` rules in `eslint.config.js`
+- [x] 2.10 Verify: `npm run test` (coverage) exits 0 across all four new/modified suites, all metrics ≥80%; `npm run typecheck` and `npm run lint` exit 0, boundary holds
+- [x] 2.11 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: Admin Auth Gate + Middleware + Real-Server Verification (Unit 3 — satisfies Admin Access Gate (Mode-Dependent), Server Output Mode for Admin Routes [dynamic-per-request half])
 

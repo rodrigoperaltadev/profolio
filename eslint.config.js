@@ -76,7 +76,7 @@ export default tseslint.config(
             { from: "content", allow: ["lib"] },
             { from: "view", allow: ["lib", "content"] },
             { from: "lib", allow: ["lib"] },
-            { from: "config", allow: ["lib"] },
+            { from: "config", allow: ["lib", "publishing"] },
             { from: "publishing", allow: ["lib", "content", "config"] },
           ],
         },
