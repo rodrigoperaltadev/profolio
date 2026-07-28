@@ -63,15 +63,15 @@ Tracker branch `feature/publishing-layer` (draft, no-merge until all children la
 
 ## Phase 4: Publishing Config Loader + FakeContentWriter (Unit 4 — satisfies FakeContentWriter Test Double, No Ambient Token Access in the Adapter [injection side], Logical Delete Semantics, Single-File Commits Only)
 
-- [ ] 4.1 RED: write `src/config/publishing-config.test.ts` — all required env vars present → returns config, `branch` defaults to `"main"` when `GITHUB_CONTENT_BRANCH` is unset; any of `GITHUB_TOKEN`/`GITHUB_REPO_OWNER`/`GITHUB_REPO_NAME` missing → throws — fails, module doesn't exist
-- [ ] 4.2 GREEN: create `src/config/publishing-config.ts` — `loadPublishingConfig()`, the only `process.env` read for this layer, per design's Interfaces/Contracts (deliberate exception to "the adapter never throws" — composition-root, fail-fast startup validation, not a write-path result)
-- [ ] 4.3 RED: write `src/publishing/fake-content-writer.test.ts` — `create` → `edit` → `create`-on-existing-slug yields `conflict` → `edit`-on-missing-slug yields `not-found`; assert `parseEntry()` still runs (invalid frontmatter rejected on both `create` and `edit`) and the module has no `fetch` import — fails, module doesn't exist
-- [ ] 4.4 GREEN: create `src/publishing/fake-content-writer.ts` — `FakeContentWriter`, in-memory `Map`-backed, same validation/conflict semantics as the real adapter, per design's Interfaces/Contracts
-- [ ] 4.5 Verify: `npm run test` (coverage) exits 0 across the full `src/publishing/**` + `src/config/**` suite, all four metrics ≥80% and non-vacuous; no real network call anywhere in the automated suite (structural guarantee, not just a lint rule)
-- [ ] 4.6 Verify: `npm run build` succeeds, confirming no route/output-mode change was made to `astro.config.mjs` (this change stays a pure module addition, no server/API route)
-- [ ] 4.7 Verify: `eslint .` exits 0 clean end-to-end — `publishing -> [lib, content, config]` boundary holds, `content`/`view`/`lib` gained no path back into `publishing`
-- [ ] 4.8 Commit as one work unit; open PR4 → PR3 branch (final child; cascades to tracker → main)
+- [x] 4.1 RED: write `src/config/publishing-config.test.ts` — all required env vars present → returns config, `branch` defaults to `"main"` when `GITHUB_CONTENT_BRANCH` is unset; any of `GITHUB_TOKEN`/`GITHUB_REPO_OWNER`/`GITHUB_REPO_NAME` missing → throws — fails, module doesn't exist
+- [x] 4.2 GREEN: create `src/config/publishing-config.ts` — `loadPublishingConfig()`, the only `process.env` read for this layer, per design's Interfaces/Contracts (deliberate exception to "the adapter never throws" — composition-root, fail-fast startup validation, not a write-path result)
+- [x] 4.3 RED: write `src/publishing/fake-content-writer.test.ts` — `create` → `edit` → `create`-on-existing-slug yields `conflict` → `edit`-on-missing-slug yields `not-found`; assert `parseEntry()` still runs (invalid frontmatter rejected on both `create` and `edit`) and the module has no `fetch` import — fails, module doesn't exist
+- [x] 4.4 GREEN: create `src/publishing/fake-content-writer.ts` — `FakeContentWriter`, in-memory `Map`-backed, same validation/conflict semantics as the real adapter, per design's Interfaces/Contracts
+- [x] 4.5 Verify: `npm run test` (coverage) exits 0 across the full `src/publishing/**` + `src/config/**` suite, all four metrics ≥80% and non-vacuous; no real network call anywhere in the automated suite (structural guarantee, not just a lint rule)
+- [x] 4.6 Verify: `npm run build` succeeds, confirming no route/output-mode change was made to `astro.config.mjs` (this change stays a pure module addition, no server/API route)
+- [x] 4.7 Verify: `eslint .` exits 0 clean end-to-end — `publishing -> [lib, content, config]` boundary holds, `content`/`view`/`lib` gained no path back into `publishing`
+- [x] 4.8 Commit as one work unit; open PR4 → PR3 branch (final child; cascades to tracker → main)
 
 ## Next Step
 
-Ready for `sdd-apply`, starting with Phase 1 / PR1 (`feat/publishing-schema-boundaries`).
+All 4 phases complete (PR1-PR4). Ready for `sdd-verify`.

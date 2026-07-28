@@ -3,8 +3,7 @@
 // `parseEntry()` call and exactly one sanitizing catch boundary; the token
 // is only reachable via constructor injection (`config.token`), never
 // `process.env`.
-import { postsSchema, projectsSchema } from "../content/schemas";
-import { parseEntry, type ParseResult } from "../content/validate-entry";
+import { parseFrontmatter } from "./parse-frontmatter";
 import { sanitizeError } from "./sanitize-error";
 import { buildMarkdownFile } from "./frontmatter";
 import type {
@@ -37,23 +36,6 @@ function buildContentPath(collection: Collection, slug: string): string {
 
 function encodeBase64(content: string): string {
   return Buffer.from(content, "utf-8").toString("base64");
-}
-
-// Each ternary branch calls `parseEntry` with its own concrete schema, so TS
-// infers `PostsOutput`/`ProjectsOutput` independently per branch instead of
-// unifying them through a shared generic parameter (which `exactOptionalPropertyTypes`
-// rejects for this union). The validated data is widened to
-// `Record<string, unknown>` only after validation succeeds, purely to hand a
-// plain object to `buildMarkdownFile()`.
-function parseFrontmatter(
-  collection: Collection,
-  frontmatter: Record<string, unknown>,
-): ParseResult<Record<string, unknown>> {
-  const result =
-    collection === "posts"
-      ? parseEntry(postsSchema, frontmatter)
-      : parseEntry(projectsSchema, frontmatter);
-  return result.ok ? { ok: true, data: result.data } : result;
 }
 
 export class GithubContentWriterAdapter implements ContentWriter {

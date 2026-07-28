@@ -36,3 +36,6 @@ jobs:
 
       - name: Content collections proof (real getCollection())
         run: npm run verify:content
+
+      - name: Frontmatter round-trip proof (real astro build)
+        run: npm run verify:frontmatter
