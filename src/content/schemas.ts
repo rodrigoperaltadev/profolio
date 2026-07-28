@@ -12,6 +12,7 @@ export const postsSchema = z.object({
   date: z.coerce.date(),
   tags: z.array(z.string()).default([]),
   draft: z.boolean().default(false),
+  deleted: z.boolean().default(false),
 });
 
 export const projectsSchema = z.object({
@@ -20,4 +21,5 @@ export const projectsSchema = z.object({
   link: z.url(),
   date: z.coerce.date(),
   draft: z.boolean().default(false),
+  deleted: z.boolean().default(false),
 });
