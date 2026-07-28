@@ -1,0 +1,115 @@
+---
+// Admin Entry Editing form + delete confirmation — see the spec's "Admin
+// Entry Creation and Editing", "Admin Logical Delete", and "Logical-Delete
+// Visibility Disclosure" requirements. Prefill uses getEntry(), confirmed in
+// task 4.1: the real entry id under `legacy.collectionsBackwardsCompat`
+// carries the ".md" extension, so the extensionless URL slug must be
+// suffixed with ".md" before the lookup (see design.md's "getEntry() id
+// shape" decision).
+export const prerender = false; // dynamic per request — see astro.config.mjs
+
+import { getEntry } from "astro:content";
+import { parseCollectionParam } from "../../_lib/collection-param";
+
+const collection = parseCollectionParam(Astro.params.collection);
+const slug = Astro.params.slug;
+const entry = collection && slug ? await getEntry(collection, `${slug}.md`) : undefined;
+if (!collection || !slug || !entry) Astro.response.status = 404;
+const error = Astro.url.searchParams.get("error");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Edit {slug ?? "entry"}</title>
+  </head>
+  <body>
+    {
+      !collection || !slug || !entry ? (
+        <p>Entry not found.</p>
+      ) : (
+        <>
+          <h1>
+            Edit {collection}/{slug}
+          </h1>
+          {error && <p role="alert">{error}</p>}
+          <form method="POST" action={`/admin/api/${collection}/${slug}/edit`}>
+            {entry.collection === "posts" ? (
+              <>
+                <p>
+                  <label>
+                    Title
+                    <input type="text" name="title" required value={entry.data.title} />
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    Tags (comma-separated)
+                    <input type="text" name="tags" value={entry.data.tags.join(", ")} />
+                  </label>
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  <label>
+                    Name
+                    <input type="text" name="name" required value={entry.data.name} />
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    Stack (comma-separated)
+                    <input type="text" name="stack" value={entry.data.stack.join(", ")} />
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    Link
+                    <input type="url" name="link" required value={entry.data.link} />
+                  </label>
+                </p>
+              </>
+            )}
+            <p>
+              <label>
+                Date
+                <input
+                  type="date"
+                  name="date"
+                  required
+                  value={entry.data.date.toISOString().slice(0, 10)}
+                />
+              </label>
+            </p>
+            <p>
+              <label>
+                Draft
+                <input type="checkbox" name="draft" checked={entry.data.draft} />
+              </label>
+            </p>
+            <p>
+              <label>
+                Body <textarea name="body">{entry.body}</textarea>
+              </label>
+            </p>
+            <button type="submit">Save</button>
+          </form>
+
+          <form method="POST" action={`/admin/api/${collection}/${slug}/delete`}>
+            <p>
+              Deleting only marks this entry <code>deleted: true</code> in its
+              frontmatter — it stays publicly visible on the live site until a
+              future change adds read-side filtering.
+            </p>
+            <button type="submit">Delete</button>
+          </form>
+
+          <p>
+            <a href="/admin">Back to list</a>
+          </p>
+        </>
+      )
+    }
+  </body>
+</html>

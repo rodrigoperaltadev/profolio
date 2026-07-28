@@ -1,0 +1,90 @@
+---
+// Admin Entry Creation form — see the spec's "Admin Entry Creation and
+// Editing" requirement. Native <form method="POST">, no client JS, no
+// framework runtime (design.md's Technical Approach / "No Client-Side UI
+// Framework" requirement).
+export const prerender = false; // dynamic per request — see astro.config.mjs
+
+import { parseCollectionParam } from "../_lib/collection-param";
+
+const collection = parseCollectionParam(Astro.params.collection);
+if (!collection) Astro.response.status = 404;
+const error = Astro.url.searchParams.get("error");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>New {collection ?? "entry"}</title>
+  </head>
+  <body>
+    {
+      !collection ? (
+        <p>Unknown collection.</p>
+      ) : (
+        <>
+          <h1>New {collection}</h1>
+          {error && <p role="alert">{error}</p>}
+          <form method="POST" action={`/admin/api/${collection}/create`}>
+            <p>
+              <label>
+                Slug <input type="text" name="slug" required />
+              </label>
+            </p>
+            {collection === "posts" ? (
+              <>
+                <p>
+                  <label>
+                    Title <input type="text" name="title" required />
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    Tags (comma-separated) <input type="text" name="tags" />
+                  </label>
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  <label>
+                    Name <input type="text" name="name" required />
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    Stack (comma-separated) <input type="text" name="stack" />
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    Link <input type="url" name="link" required />
+                  </label>
+                </p>
+              </>
+            )}
+            <p>
+              <label>
+                Date <input type="date" name="date" required />
+              </label>
+            </p>
+            <p>
+              <label>
+                Draft <input type="checkbox" name="draft" />
+              </label>
+            </p>
+            <p>
+              <label>
+                Body <textarea name="body"></textarea>
+              </label>
+            </p>
+            <button type="submit">Create</button>
+          </form>
+          <p>
+            <a href="/admin">Back to list</a>
+          </p>
+        </>
+      )
+    }
+  </body>
+</html>
