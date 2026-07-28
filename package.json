@@ -12,6 +12,7 @@
     "test": "vitest run --coverage",
     "verify:content": "node scripts/verify-content-collections.mjs",
     "verify:frontmatter": "node scripts/verify-frontmatter-round-trip.mjs",
+    "verify:admin-server": "node scripts/verify-admin-server.mjs",
     "build": "astro build"
   },
   "devDependencies": {
@@ -29,6 +30,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
+    "@astrojs/node": "^11.0.3",
     "astro": "^7.1.4",
     "zod": "^4.4.3"
   }

@@ -32,6 +32,17 @@ export default tseslint.config(
         { type: "config", pattern: "src/config/**" },
         { type: "lib", pattern: "src/lib/**" },
         { type: "publishing", pattern: "src/publishing/**" },
+        { type: "admin", pattern: "src/pages/admin/**" },
+        // No `middleware` element for `src/middleware.ts`: eslint-plugin-boundaries
+        // element patterns match folders, not individual files (its own runtime
+        // warning confirms this) — a bare-file pattern never actually classifies
+        // the file, so `create()` (see node_modules/eslint-plugin-boundaries/
+        // dist/Rules/Support/DependencyRule.js) skips it as unmatched and no
+        // restriction is ever applied. Verified empirically during apply: setting
+        // `{ from: "middleware", allow: [] }` (deny everything) still produced
+        // zero lint errors for its `./config/*` imports. Declaring the element
+        // would imply a protection that doesn't exist — see design.md's Open
+        // Question.
       ],
     },
     rules: {
@@ -41,6 +52,10 @@ export default tseslint.config(
         { selector: "variable", format: ["camelCase", "UPPER_CASE"] },
         { selector: "typeLike", format: ["PascalCase"] },
         { selector: "enumMember", format: ["UPPER_CASE"] },
+        // Astro component default imports are PascalCase by convention
+        // (e.g. `import CollectionSection from "./collection-section.astro"`)
+        // — added for the admin UI's first `.astro` component import.
+        { selector: "import", format: ["camelCase", "PascalCase"] },
       ],
       complexity: ["error", 10],
       "sonarjs/cognitive-complexity": ["error", 15],
@@ -76,8 +91,9 @@ export default tseslint.config(
             { from: "content", allow: ["lib"] },
             { from: "view", allow: ["lib", "content"] },
             { from: "lib", allow: ["lib"] },
-            { from: "config", allow: ["lib"] },
+            { from: "config", allow: ["lib", "publishing"] },
             { from: "publishing", allow: ["lib", "content", "config"] },
+            { from: "admin", allow: ["content", "publishing", "config", "lib"] },
           ],
         },
       ],
@@ -107,12 +123,31 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
     languageOptions: {
       ...tseslint.configs.disableTypeChecked.languageOptions,
-      globals: { console: "readonly", URL: "readonly" },
+      globals: {
+        console: "readonly",
+        URL: "readonly",
+        Buffer: "readonly",
+        process: "readonly",
+        fetch: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+      },
     },
     rules: {
       ...tseslint.configs.disableTypeChecked.rules,
       "@typescript-eslint/explicit-function-return-type": "off",
     },
+  },
+  // `astro-eslint-parser`'s typed checking cannot resolve the return type of
+  // an array `.map()` callback whose body is an Astro template node (it
+  // reports it as literal type `error`), even though `astro check`/the real
+  // Astro compiler type-checks these templates correctly — found empirically
+  // in the admin UI's first `.astro` files that render lists (`index.astro`,
+  // `_lib/collection-section.astro`). Scoped to `.astro` only; `.ts`/`.tsx`
+  // files still get the full unsafe-return check.
+  {
+    files: ["**/*.astro"],
+    rules: { "@typescript-eslint/no-unsafe-return": "off" },
   },
   // `src/env.d.ts` uses Astro's standard triple-slash reference to pull in
   // `.astro/types.d.ts` (ambient `astro:content` module + generated

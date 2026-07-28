@@ -34,6 +34,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Admin access gate proof (real server + real HTTP requests)
+        run: npm run verify:admin-server
+
       - name: Content collections proof (real getCollection())
         run: npm run verify:content
 

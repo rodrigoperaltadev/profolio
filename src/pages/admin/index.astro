@@ -1,0 +1,70 @@
+---
+// Admin Entry Listing — see the spec's "Admin Entry Listing" requirement.
+// Uses getCollection() + the existing toContentEntry mapper; the render
+// loop below is collection-agnostic (a single `groups.map()`), the only
+// place collection names are enumerated is this one data-fetch list, the
+// same precedent `to-content-entry.ts`'s own `mappers` table already sets.
+export const prerender = false; // dynamic per request — see astro.config.mjs
+
+import { getCollection } from "astro:content";
+import { toContentEntry } from "../../content/_mappers/to-content-entry";
+import { isPublishingConfigured } from "../../config/publishing-config";
+import CollectionSection from "./_lib/collection-section.astro";
+import type { ContentEntry } from "../../content/entry";
+import type { Collection } from "../../publishing/content-writer";
+
+interface CollectionGroup {
+  collection: Collection;
+  entries: ContentEntry[];
+}
+
+const groups: CollectionGroup[] = [
+  { collection: "posts", entries: (await getCollection("posts")).map(toContentEntry) },
+  {
+    collection: "projects",
+    entries: (await getCollection("projects")).map(toContentEntry),
+  },
+];
+
+const params = Astro.url.searchParams;
+const showCommitReminder =
+  !isPublishingConfigured() &&
+  (params.has("created") || params.has("updated") || params.has("deleted"));
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin</title>
+  </head>
+  <body>
+    <h1>Admin</h1>
+
+    {
+      showCommitReminder && (
+        <p role="status">Saved to disk only — remember to commit this change.</p>
+      )
+    }
+    {
+      params.has("created") && (
+        <p role="status">Created "{params.get("created")}".</p>
+      )
+    }
+    {
+      params.has("updated") && (
+        <p role="status">Updated "{params.get("updated")}".</p>
+      )
+    }
+    {
+      params.has("deleted") && (
+        <p role="status">Marked "{params.get("deleted")}" as deleted.</p>
+      )
+    }
+
+    {
+      groups.map((group: CollectionGroup) => (
+        <CollectionSection collection={group.collection} entries={group.entries} />
+      ))
+    }
+  </body>
+</html>

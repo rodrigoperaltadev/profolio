@@ -15,5 +15,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.astro", "vitest.config.ts"]
 }
