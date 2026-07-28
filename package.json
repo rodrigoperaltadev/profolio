@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "test": "vitest run --coverage",
     "verify:content": "node scripts/verify-content-collections.mjs",
+    "verify:frontmatter": "node scripts/verify-frontmatter-round-trip.mjs",
     "build": "astro build"
   },
   "devDependencies": {
