@@ -1,0 +1,40 @@
+---
+// Renders one collection's entry list for the admin index page — split out
+// of `index.astro` so its render loop only ever needs one (non-nested)
+// `.map()`, matching `index.astro`'s outer `.map()` over collections. See
+// the spec's "Admin Entry Listing" requirement: no collection-specific
+// branching, entries render via the shared `ContentEntry` shape as-is.
+import type { ContentEntry } from "../../../content/entry";
+import type { Collection } from "../../../publishing/content-writer";
+
+interface Props {
+  collection: Collection;
+  entries: ContentEntry[];
+}
+
+const { collection, entries } = Astro.props;
+
+// getCollection() ids under `legacy.collectionsBackwardsCompat` carry the
+// ".md" extension (see design.md's "getEntry() id shape" decision, found
+// empirically during apply); admin routes use the extensionless slug,
+// consistent with ContentWriter's/buildContentPath()'s convention.
+function toSlug(id: string): string {
+  return id.replace(/\.md$/, "");
+}
+---
+
+<section>
+  <h2>
+    {collection} <a href={`/admin/${collection}/new`}>New</a>
+  </h2>
+  <ul>
+    {
+      entries.map((entry) => (
+        <li>
+          <a href={`/admin/${collection}/${toSlug(entry.id)}/edit`}>{entry.title}</a>
+        </li>
+      ))
+    }
+    {entries.length === 0 && <li>No entries yet.</li>}
+  </ul>
+</section>

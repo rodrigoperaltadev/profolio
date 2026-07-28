@@ -52,6 +52,10 @@ export default tseslint.config(
         { selector: "variable", format: ["camelCase", "UPPER_CASE"] },
         { selector: "typeLike", format: ["PascalCase"] },
         { selector: "enumMember", format: ["UPPER_CASE"] },
+        // Astro component default imports are PascalCase by convention
+        // (e.g. `import CollectionSection from "./collection-section.astro"`)
+        // — added for the admin UI's first `.astro` component import.
+        { selector: "import", format: ["camelCase", "PascalCase"] },
       ],
       complexity: ["error", 10],
       "sonarjs/cognitive-complexity": ["error", 15],
@@ -133,6 +137,17 @@ export default tseslint.config(
       ...tseslint.configs.disableTypeChecked.rules,
       "@typescript-eslint/explicit-function-return-type": "off",
     },
+  },
+  // `astro-eslint-parser`'s typed checking cannot resolve the return type of
+  // an array `.map()` callback whose body is an Astro template node (it
+  // reports it as literal type `error`), even though `astro check`/the real
+  // Astro compiler type-checks these templates correctly — found empirically
+  // in the admin UI's first `.astro` files that render lists (`index.astro`,
+  // `_lib/collection-section.astro`). Scoped to `.astro` only; `.ts`/`.tsx`
+  // files still get the full unsafe-return check.
+  {
+    files: ["**/*.astro"],
+    rules: { "@typescript-eslint/no-unsafe-return": "off" },
   },
   // `src/env.d.ts` uses Astro's standard triple-slash reference to pull in
   // `.astro/types.d.ts` (ambient `astro:content` module + generated

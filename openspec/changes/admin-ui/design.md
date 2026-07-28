@@ -17,13 +17,17 @@ Flip `astro.config.mjs` to `output: "server"` + `@astrojs/node` (standalone), so
 | Factory boundary | `config -> publishing` added to `boundaries/element-types` | Put the factory in `src/publishing/**` instead | `config/**` is already the composition root (only place allowed ambient env access); constructing concrete adapters and returning the `ContentWriter` port type is a composition-root responsibility, matching `loadPublishingConfig()`'s own composition comment in that file |
 | Auth-gate testability | Gate logic lives in a pure `checkAdminAuth(request, config)` function in `src/config/admin-auth.ts`; `src/middleware.ts` is a ~10-line Astro-glue wrapper | Put all logic inline in `defineMiddleware(...)` | `astro:middleware` runtime isn't easily unit-tested in isolation. A pure function taking a real `Request` (Node's global `Request`/`Headers` construct trivially in Vitest) makes every security branch (bypass, fail-closed, timing-safe compare) coverage-gate-testable without mocking Astro internals |
 | Timing-safe comparison | `node:crypto`'s `timingSafeEqual`, with an explicit length-mismatch branch that still performs a dummy `timingSafeEqual` call before returning `false` | Plain `===` string comparison | `===` short-circuits on the first differing byte — a measurable timing side channel for a shared secret. `timingSafeEqual` throws on mismatched buffer lengths, so length must be checked first; doing a dummy same-length compare on that early-return path avoids the length check itself becoming a (weaker) timing oracle |
-| Delete's frontmatter source | Edit page does a single `getEntry(collection, slug)` server-side lookup before rendering; delete POST re-fetches via `getEntry()` again (not trusting client-submitted hidden fields for anything but display) | Trust a hidden `<input>` echoing the full frontmatter from the edit form | Re-reading server-side is one extra `getEntry()` call, already fast (in-memory content store), and removes any incentive to trust client-supplied frontmatter for the delete path |
+| Delete's frontmatter source | Edit page does a single `getEntry(collection, \`${slug}.md\`)` server-side lookup before rendering; delete POST re-fetches via `getEntry()` again (not trusting client-submitted hidden fields for anything but display) | Trust a hidden `<input>` echoing the full frontmatter from the edit form | Re-reading server-side is one extra `getEntry()` call, already fast (in-memory content store), and removes any incentive to trust client-supplied frontmatter for the delete path |
+| **[Empirically confirmed during apply, task 4.1]** `getEntry()` id shape under legacy collections | `getEntry(collection, id)` (two-arg string form) exists exactly as assumed and works, but under `legacy: { collectionsBackwardsCompat: true }` the real `CollectionEntry.id` for `type: "content"` collections includes the file extension (`"hello-world.md"`), not the extensionless slug. Calling `getEntry("posts", "hello-world")` silently resolves to `undefined` (console warning only, no throw) — the URL/`ContentWriter`/`buildContentPath()` slug convention (`"hello-world"`, no extension) must be suffixed with `.md` before every `getEntry()` call: `getEntry(collection, \`${slug}.md\`)` | Assuming the design's original `getEntry(collection, slug)` shape (extensionless) — proven wrong by build-time probe (see apply-progress) | This is the third Astro-version-specific runtime surprise this change area has hit (after the `src/content.config.ts` path and `legacy.collectionsBackwardsCompat` requirement itself), confirming task 4.1's mandate to empirically verify rather than trust the type signature alone. `entry.id` (used as-is by the existing `toContentEntry` mapper) therefore also carries the `.md` suffix; admin pages must strip it (`entry.id.replace(/\.md$/, "")`) before building route slugs, so the round-trip stays consistent with `buildContentPath()`'s extensionless convention |
 | Third build-time proof script | Add `scripts/verify-admin-server.mjs` (real `astro build` + real `node dist/server/entry.mjs` + real HTTP requests) | Rely on unit tests of `checkAdminAuth()` alone | Unit tests prove the auth *logic* is correct; they cannot prove Astro's `src/middleware.ts` convention is actually wired into the live request pipeline, or that the adapter build produces a runnable `dist/server/entry.mjs`. Matches this repo's established two-script pattern of catching real integration bugs (e.g. the `legacy.collectionsBackwardsCompat` gap) that mocks can't reach |
 
 ## Data Flow — admin edit + delete
 
     GET /admin/posts/hello-world/edit
-        └─ getEntry("posts","hello-world") ──▶ prefill form (full frontmatter)
+        └─ getEntry("posts", `${slug}.md`) ──▶ prefill form (full frontmatter)
+               (empirically confirmed: legacy CollectionEntry.id carries the
+               ".md" extension — see "getEntry() id shape" decision above;
+               URL slug stays extensionless, ".md" appended only for the call)
 
     POST /admin/api/posts/hello-world/edit
         └─ createContentWriter() ──▶ writer.edit({ collection, slug, frontmatter, body })
@@ -31,7 +35,7 @@ Flip `astro.config.mjs` to `output: "server"` + `@astrojs/node` (standalone), so
                └─ ok ──▶ 303 redirect to /admin?updated=hello-world
 
     POST /admin/api/posts/hello-world/delete
-        └─ getEntry("posts","hello-world")  (re-read, not client-trusted)
+        └─ getEntry("posts", `${slug}.md`)  (re-read, not client-trusted)
         └─ writer.edit({ ...entry.data, deleted: true }, body: entry.body })
                └─ 303 redirect to /admin?deleted=hello-world
 
