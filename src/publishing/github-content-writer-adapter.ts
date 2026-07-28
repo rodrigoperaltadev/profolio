@@ -6,8 +6,8 @@
 import { parseFrontmatter } from "./parse-frontmatter";
 import { sanitizeError } from "./sanitize-error";
 import { buildMarkdownFile } from "./frontmatter";
+import { buildContentPath } from "./content-path";
 import type {
-  Collection,
   ContentWriter,
   WriteEntryInput,
   WriteResult,
@@ -29,10 +29,6 @@ type ExistingFile =
 const CONTENTS_API_BASE = "https://api.github.com/repos";
 const SHA_CONFLICT_STATUS = 409;
 const NOT_FOUND_STATUS = 404;
-
-function buildContentPath(collection: Collection, slug: string): string {
-  return `src/content/${collection}/${slug}.md`;
-}
 
 function encodeBase64(content: string): string {
   return Buffer.from(content, "utf-8").toString("base64");
