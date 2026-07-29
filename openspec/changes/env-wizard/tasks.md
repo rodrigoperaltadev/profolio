@@ -45,21 +45,21 @@ Tracker branch `feature/env-wizard` (draft, no-merge until all children land). C
 
 ## Phase 2: Thin CLI Wizard + .gitignore (Unit 2 — satisfies CLI Entry Point and Testable Core Module [CLI half], GitHub Publishing Prompt Group, Conditional Content Branch Prompt, Theme Preset Confirmation, Idempotent .env Handling with Masked Display, .env Exclusion from Version Control)
 
-- [ ] 2.1 Create `scripts/setup-wizard.mjs` — `readline/promises` CLI entry point; imports `env-wizard-core.mjs`; does the only fs I/O (`fs.readFileSync`/`writeFileSync` against `.env`); holds no parse/merge/serialize/validation logic of its own (delegates all of it to the core module)
-- [ ] 2.2 Wire prompt order per spec: (1) GitHub publishing yes/no — declining skips `GITHUB_TOKEN`/`GITHUB_REPO_OWNER`/`GITHUB_REPO_NAME` together, none are prompted or written; accepting requires all three non-empty, re-prompting on empty/invalid input using `core.isNonEmpty`/`core.looksLikeGithubToken`/`core.isRepoSlug`
-- [ ] 2.3 Wire `GITHUB_CONTENT_BRANCH` prompt — only asked when GitHub publishing is being configured, optional, defaults to `"main"` when left blank
-- [ ] 2.4 Wire `ADMIN_ACCESS_TOKEN` prompt — offered whenever GitHub vars are being configured; operator chooses generate (`core.generateAdminToken()`) or supplies a custom value; written verbatim either way, no hashing step
-- [ ] 2.5 Wire `THEME_PRESET` prompt — confirm-or-override, defaulting to `"brutalist"`
-- [ ] 2.6 Wire idempotent existing-`.env` flow: if `.env` exists, parse it via `core.parseEnvFile`, show each of the wizard's known keys' current value via `core.getEntryValue` + `core.maskSecret`, let the operator keep or replace each key individually; merge answers via `core.mergeEnvEntries` and write via `core.serializeEnv`
-- [ ] 2.7 Print the PAT template link (`core.buildPatTemplateUrl`) plus an explicit CLI-output note that repository scoping is not pre-confirmed and must be selected manually in GitHub's UI
-- [ ] 2.8 Add `.env` and `.env.*` to `.gitignore`
-- [ ] 2.9 Add `setup` npm script to `package.json`: `"setup": "node scripts/setup-wizard.mjs"`
-- [ ] 2.10 Manual smoke test: run `npm run setup` against no existing `.env`, decline GitHub publishing, confirm `GITHUB_TOKEN`/`GITHUB_REPO_OWNER`/`GITHUB_REPO_NAME`/`GITHUB_CONTENT_BRANCH` are never prompted and not written; confirm `THEME_PRESET=brutalist` is written on default-confirm
-- [ ] 2.11 Manual smoke test: re-run `npm run setup` against the `.env` from 2.10, accept GitHub publishing this time, confirm all three GitHub fields are now required and validated locally (malformed `GITHUB_REPO_NAME` is rejected and re-prompted, no network call is made); confirm the PAT link + manual-scoping note are printed
-- [ ] 2.12 Manual smoke test: hand-add an unrelated key to `.env` outside the wizard's known surface, re-run `npm run setup`, confirm that key and its value survive in the written file untouched; confirm an existing secret is displayed masked (not in full) before the keep/replace choice
-- [ ] 2.13 **Real verification (not assumed) — carry-forward item 3:** after 2.10-2.12 have written a real `.env`, run `git status` and `git check-ignore -v .env`; confirm `.env` is reported as ignored and does not appear as trackable/staged
-- [ ] 2.14 Verify: `npm run lint` and `npm run typecheck` exit 0
-- [ ] 2.15 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 Create `scripts/setup-wizard.mjs` — `readline/promises` CLI entry point; imports `env-wizard-core.mjs`; does the only fs I/O (`fs.readFileSync`/`writeFileSync` against `.env`); holds no parse/merge/serialize/validation logic of its own (delegates all of it to the core module)
+- [x] 2.2 Wire prompt order per spec: (1) GitHub publishing yes/no — declining skips `GITHUB_TOKEN`/`GITHUB_REPO_OWNER`/`GITHUB_REPO_NAME` together, none are prompted or written; accepting requires all three non-empty, re-prompting on empty/invalid input using `core.isNonEmpty`/`core.looksLikeGithubToken`/`core.isRepoSlug`
+- [x] 2.3 Wire `GITHUB_CONTENT_BRANCH` prompt — only asked when GitHub publishing is being configured, optional, defaults to `"main"` when left blank
+- [x] 2.4 Wire `ADMIN_ACCESS_TOKEN` prompt — offered whenever GitHub vars are being configured; operator chooses generate (`core.generateAdminToken()`) or supplies a custom value; written verbatim either way, no hashing step
+- [x] 2.5 Wire `THEME_PRESET` prompt — confirm-or-override, defaulting to `"brutalist"`
+- [x] 2.6 Wire idempotent existing-`.env` flow: if `.env` exists, parse it via `core.parseEnvFile`, show each of the wizard's known keys' current value via `core.getEntryValue` + `core.maskSecret`, let the operator keep or replace each key individually; merge answers via `core.mergeEnvEntries` and write via `core.serializeEnv`
+- [x] 2.7 Print the PAT template link (`core.buildPatTemplateUrl`) plus an explicit CLI-output note that repository scoping is not pre-confirmed and must be selected manually in GitHub's UI
+- [x] 2.8 Add `.env` and `.env.*` to `.gitignore`
+- [x] 2.9 Add `setup` npm script to `package.json`: `"setup": "node scripts/setup-wizard.mjs"`
+- [x] 2.10 Manual smoke test: run `npm run setup` against no existing `.env`, decline GitHub publishing, confirm `GITHUB_TOKEN`/`GITHUB_REPO_OWNER`/`GITHUB_REPO_NAME`/`GITHUB_CONTENT_BRANCH` are never prompted and not written; confirm `THEME_PRESET=brutalist` is written on default-confirm
+- [x] 2.11 Manual smoke test: re-run `npm run setup` against the `.env` from 2.10, accept GitHub publishing this time, confirm all three GitHub fields are now required and validated locally (malformed `GITHUB_REPO_NAME` is rejected and re-prompted, no network call is made); confirm the PAT link + manual-scoping note are printed
+- [x] 2.12 Manual smoke test: hand-add an unrelated key to `.env` outside the wizard's known surface, re-run `npm run setup`, confirm that key and its value survive in the written file untouched; confirm an existing secret is displayed masked (not in full) before the keep/replace choice
+- [x] 2.13 **Real verification (not assumed) — carry-forward item 3:** after 2.10-2.12 have written a real `.env`, run `git status` and `git check-ignore -v .env`; confirm `.env` is reported as ignored and does not appear as trackable/staged
+- [x] 2.14 Verify: `npm run lint` and `npm run typecheck` exit 0
+- [x] 2.15 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: Runtime `--env-file` Wiring + Build-Time Proof (Unit 3 — satisfies Runtime Env Loading for dev and start)
 
