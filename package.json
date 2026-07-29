@@ -6,6 +6,9 @@
   "description": "Git-as-CMS content/blog engine (open source, reusable/themeable).",
   "license": "MIT",
   "scripts": {
+    "setup": "node scripts/setup-wizard.mjs",
+    "dev": "node --env-file=.env node_modules/astro/bin/astro.mjs dev",
+    "start": "node --env-file=.env dist/server/entry.mjs",
     "pretypecheck": "astro sync",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -14,6 +17,7 @@
     "verify:frontmatter": "node scripts/verify-frontmatter-round-trip.mjs",
     "verify:admin-server": "node scripts/verify-admin-server.mjs",
     "verify:theme": "node scripts/verify-theme-build.mjs",
+    "verify:env-file": "node scripts/verify-env-file-loading.mjs",
     "build": "astro build"
   },
   "devDependencies": {
