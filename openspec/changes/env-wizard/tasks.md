@@ -63,17 +63,17 @@ Tracker branch `feature/env-wizard` (draft, no-merge until all children land). C
 
 ## Phase 3: Runtime `--env-file` Wiring + Build-Time Proof (Unit 3 — satisfies Runtime Env Loading for dev and start)
 
-- [ ] 3.1 Add `dev` script to `package.json`: `"dev": "node --env-file=.env node_modules/astro/bin/astro.mjs dev"`
-- [ ] 3.2 Add `start` script to `package.json`: `"start": "node --env-file=.env dist/server/entry.mjs"`
-- [ ] 3.3 **Empirical verification (mandatory, do first — carry-forward item 1a):** with a real `.env` present (e.g. from Phase 2's smoke tests, containing `THEME_PRESET`/`ADMIN_ACCESS_TOKEN`), actually run `npm run dev`; confirm the dev server starts cleanly (no `node: bad option: --env-file` error) and the running process observes a `.env`-configured value — do not assume the invocation shape from design's confirmed `bin.astro` field alone
-- [ ] 3.4 **Empirical verification (mandatory — carry-forward item 1b):** run `npm run build`, then actually run `npm run start` against the same `.env`; confirm the built entry point starts cleanly and observes the same `.env`-configured value (e.g. via the admin gate's `ADMIN_ACCESS_TOKEN` behavior, reusing `verify-admin-server.mjs`'s proven request pattern as a manual check)
-- [ ] 3.5 Create `scripts/verify-env-file-loading.mjs` — 5th build-time proof script; spawns the built `dist/server/entry.mjs` via `node --env-file=.env` (not the `env:` option injection `verify-admin-server.mjs` uses) against a script-written throwaway `.env`; asserts the spawned process actually observes a value that was written to that file and never passed through the parent process's own environment — proving `--env-file` itself, not just env-driven behavior
-- [ ] 3.6 Add `verify:env-file` npm script to `package.json`; add a corresponding step to `.github/workflows/ci.yml` after the existing verify steps, matching the other four `verify-*.mjs` CI entries
-- [ ] 3.7 **Real run (not author-and-assume) — carry-forward item 2:** actually execute `npm run verify:env-file`; confirm it exits 0 against the real build, not a mocked/assumed one
-- [ ] 3.8 Document in `README.md`: new "Setup" section covering `npm run setup`, the Node ≥20.6 requirement for `--env-file` (CI pinned to 22), and that `npm run dev`/`npm run start` now load `.env` automatically
-- [ ] 3.9 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
-- [ ] 3.10 Commit as one work unit; open PR3 → PR2 branch (final child; cascades to tracker → main)
+- [x] 3.1 Add `dev` script to `package.json`: `"dev": "node --env-file=.env node_modules/astro/bin/astro.mjs dev"`
+- [x] 3.2 Add `start` script to `package.json`: `"start": "node --env-file=.env dist/server/entry.mjs"`
+- [x] 3.3 **Empirical verification (mandatory, do first — carry-forward item 1a):** with a real `.env` present (e.g. from Phase 2's smoke tests, containing `THEME_PRESET`/`ADMIN_ACCESS_TOKEN`), actually run `npm run dev`; confirm the dev server starts cleanly (no `node: bad option: --env-file` error) and the running process observes a `.env`-configured value — do not assume the invocation shape from design's confirmed `bin.astro` field alone
+- [x] 3.4 **Empirical verification (mandatory — carry-forward item 1b):** run `npm run build`, then actually run `npm run start` against the same `.env`; confirm the built entry point starts cleanly and observes the same `.env`-configured value (e.g. via the admin gate's `ADMIN_ACCESS_TOKEN` behavior, reusing `verify-admin-server.mjs`'s proven request pattern as a manual check)
+- [x] 3.5 Create `scripts/verify-env-file-loading.mjs` — 5th build-time proof script; spawns the built `dist/server/entry.mjs` via `node --env-file=.env` (not the `env:` option injection `verify-admin-server.mjs` uses) against a script-written throwaway `.env`; asserts the spawned process actually observes a value that was written to that file and never passed through the parent process's own environment — proving `--env-file` itself, not just env-driven behavior
+- [x] 3.6 Add `verify:env-file` npm script to `package.json`; add a corresponding step to `.github/workflows/ci.yml` after the existing verify steps, matching the other four `verify-*.mjs` CI entries
+- [x] 3.7 **Real run (not author-and-assume) — carry-forward item 2:** actually execute `npm run verify:env-file`; confirm it exits 0 against the real build, not a mocked/assumed one
+- [x] 3.8 Document in `README.md`: new "Setup" section covering `npm run setup`, the Node ≥20.6 requirement for `--env-file` (CI pinned to 22), and that `npm run dev`/`npm run start` now load `.env` automatically
+- [x] 3.9 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
+- [x] 3.10 Commit as one work unit; open PR3 → PR2 branch (final child; cascades to tracker → main)
 
 ## Next Step
 
-Ready for `sdd-apply`, starting with PR1 (Phase 1). Given `auto-chain`, proceed with Unit 1 without further confirmation; re-check the Review Workload Forecast per-unit estimate as each PR's real diff lands, and re-verify the `dev`/`start`/`verify:env-file` invocation shapes empirically in Phase 3 rather than trusting the design's reading of Astro's package.json.
+All three phases (1, 2, 3) are complete and `[x]` above. PR1 #35 and PR2 #36 are merged. PR3 (Phase 3, this branch `feat/env-wizard-runtime` → base `feat/env-wizard-cli`) implements the runtime `--env-file` wiring and closes out the change. Ready for `sdd-verify`.
