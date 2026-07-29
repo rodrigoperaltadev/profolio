@@ -1,0 +1,57 @@
+---
+// Shared theme entry point — see openspec/changes/theme-system/design.md's
+// Architecture Decisions ("CSS entry point ownership", "Toggle wiring
+// across Layout/page boundary", "FOUC prevention"). Owns the single
+// Tailwind/theme CSS import, sets `data-theme` on <html>, and inlines the
+// two vanilla-JS scripts that drive the light/dark toggle. No client-side
+// UI framework is used anywhere in this file.
+import "./global.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="en" data-theme="brutalist">
+  <head>
+    <script is:inline>
+      // Runs synchronously as the first child of <head> (no `defer`, no
+      // `type="module"`) so it blocks parsing/paint and applies the saved
+      // theme BEFORE first paint — a deferred or end-of-body script would
+      // flash the dark default before switching to `light-theme`.
+      (function () {
+        var stored = localStorage.getItem("theme");
+        var isLight = stored
+          ? stored === "light"
+          : window.matchMedia("(prefers-color-scheme: light)").matches;
+        if (isLight) {
+          document.documentElement.classList.add("light-theme");
+        }
+      })();
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+    <script is:inline>
+      // Event delegation: the toggle trigger (e.g. BrutalistButton) lives
+      // on individual pages, not in this Layout — delegating the click
+      // handler here decouples the toggle mechanism from where the trigger
+      // is placed.
+      document.addEventListener("click", function (event) {
+        var target = event.target;
+        if (!target || !target.closest) return;
+        var trigger = target.closest("[data-theme-toggle]");
+        if (!trigger) return;
+
+        var isNowLight = !document.documentElement.classList.contains("light-theme");
+        document.documentElement.classList.toggle("light-theme", isNowLight);
+        localStorage.setItem("theme", isNowLight ? "light" : "dark");
+      });
+    </script>
+  </body>
+</html>
