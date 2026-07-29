@@ -1,0 +1,30 @@
+@theme {
+  --color-background: #111111;
+  --color-surface: #1a1a1a;
+  --color-surface-alt: #0c0c0c;
+  --color-accent: #00FFFF;
+  --color-text-primary: #E5E4E2;
+  --color-text-secondary: rgba(229, 228, 226, 0.6);
+  --color-grid: rgba(0, 255, 255, 0.04);
+  --color-border: rgba(229, 228, 226, 0.1);
+  --color-border-subtle: rgba(229, 228, 226, 0.05);
+  --color-muted: rgba(229, 228, 226, 0.25);
+
+  --font-heading: "Space Grotesk", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+.light-theme,
+html.light-theme {
+  --color-background: #F4F0EC;
+  --color-surface: #E8E4DF;
+  --color-surface-alt: #DEDAD4;
+  --color-accent: #008B8B;
+  --color-text-primary: #1A1110;
+  --color-text-secondary: #4A4542;
+  --color-grid: rgba(0, 139, 139, 0.06);
+  --color-border: rgba(26, 17, 16, 0.12);
+  --color-border-subtle: rgba(26, 17, 16, 0.06);
+  --color-muted: rgba(26, 17, 16, 0.35);
+}
