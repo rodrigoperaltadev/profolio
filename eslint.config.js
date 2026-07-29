@@ -126,6 +126,7 @@ export default tseslint.config(
       globals: {
         console: "readonly",
         URL: "readonly",
+        URLSearchParams: "readonly",
         Buffer: "readonly",
         process: "readonly",
         fetch: "readonly",
