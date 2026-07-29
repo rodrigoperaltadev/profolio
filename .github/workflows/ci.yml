@@ -45,3 +45,6 @@ jobs:
 
       - name: Frontmatter round-trip proof (real astro build)
         run: npm run verify:frontmatter
+
+      - name: Env file loading proof (real --env-file spawn, no env-option injection)
+        run: npm run verify:env-file
