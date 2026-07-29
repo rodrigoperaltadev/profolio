@@ -7,20 +7,28 @@
 import { defineMiddleware } from "astro:middleware";
 import { checkAdminAuth } from "./config/admin-auth";
 import { isPublishingConfigured, loadAdminAccessToken } from "./config/publishing-config";
+import { SESSION_COOKIE_NAME, sessionStore } from "./config/admin-session";
+
+// The login page and its POST endpoint must be reachable before a session
+// exists, so they bypass the gate entirely — see design.md's Data Flow.
+const LOGIN_PATHS = ["/admin/login", "/admin/api/login"];
 
 export const onRequest = defineMiddleware((context, next) => {
   if (!context.url.pathname.startsWith("/admin")) return next();
-  const result = checkAdminAuth(context.request, {
-    isConfigured: isPublishingConfigured(),
-    expectedToken: loadAdminAccessToken(),
-  });
+  if (LOGIN_PATHS.includes(context.url.pathname)) return next();
+  const sessionToken = context.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const result = checkAdminAuth(
+    sessionToken,
+    { isConfigured: isPublishingConfigured(), expectedToken: loadAdminAccessToken() },
+    sessionStore,
+  );
   if (!result.allowed) {
-    // Built via `Headers.set()` (not an object literal) so the HTTP
-    // "WWW-Authenticate" header name — a hyphenated wire-format string, not
-    // a JS identifier — doesn't trip `@typescript-eslint/naming-convention`.
-    const headers = new Headers();
-    if (result.wwwAuthenticate) headers.set("WWW-Authenticate", result.wwwAuthenticate);
-    return new Response("Unauthorized", { status: result.status, headers });
+    // No login route exists to redirect to yet for non-GET requests (e.g. an
+    // API call without a valid session) — those still fail closed with 401.
+    // GET requests get a real page to land on, per design.md's "Redirect vs.
+    // 401" decision.
+    if (context.request.method === "GET") return context.redirect("/admin/login", 303);
+    return new Response("Unauthorized", { status: 401 });
   }
   return next();
 });
