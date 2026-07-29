@@ -1,0 +1,22 @@
+---
+// First public route — proves the theme system renders end-to-end. Minimal
+// proof page only, not a finished home page — see
+// openspec/changes/theme-system/specs/public-pages/spec.md's "Minimal Scope
+// Boundary" requirement. No src/content/** imports.
+export const prerender = true;
+
+import Layout from "../presentation/Layout.astro";
+import TerminalWindow from "../presentation/brutalist/TerminalWindow.astro";
+import BrutalistButton from "../presentation/brutalist/BrutalistButton.astro";
+---
+
+<Layout title="Profolio">
+  <main class="min-h-screen flex items-center justify-center p-4">
+    <TerminalWindow>
+      <p class="text-text-primary font-mono">Theme system online.</p>
+      <BrutalistButton variant="secondary" data-theme-toggle>
+        Toggle theme
+      </BrutalistButton>
+    </TerminalWindow>
+  </main>
+</Layout>

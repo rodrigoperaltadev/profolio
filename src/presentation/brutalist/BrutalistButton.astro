@@ -1,0 +1,38 @@
+---
+// Native Astro port of my-resume's `BrutalistButton.tsx` — see
+// openspec/changes/theme-system/design.md's Interfaces/Contracts. Tailwind
+// utility classes are preserved verbatim from the React/JSX original; only
+// the component shape (Astro.props + rest-attribute spread instead of
+// React props) changed.
+import type { HTMLAttributes } from "astro/types";
+import { cn } from "./cn";
+
+interface Props extends HTMLAttributes<"button"> {
+  variant?: "primary" | "secondary";
+  class?: string;
+}
+
+const { variant = "primary", class: className, ...rest } = Astro.props;
+
+const baseClasses =
+  "group relative px-10 py-5 font-mono font-bold uppercase tracking-widest text-[10px] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer flex items-center justify-center gap-2";
+
+const primaryClasses =
+  "bg-accent text-black border border-accent hover:bg-black hover:text-accent shadow-[4px_4px_0px_0px_rgba(0,255,255,0.3)] hover:shadow-[0px_0px_15px_rgba(0,255,255,0.4)]";
+
+const secondaryClasses =
+  "border border-border text-text-secondary hover:border-accent hover:text-accent bg-transparent hover:bg-accent/5";
+
+const variantClasses = variant === "primary" ? primaryClasses : secondaryClasses;
+---
+
+<button class={cn(baseClasses, variantClasses, className)} {...rest}>
+  <span class="relative z-10 flex items-center justify-center gap-2">
+    <slot />
+  </span>
+  {
+    variant === "primary" && (
+      <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+    )
+  }
+</button>

@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import node from "@astrojs/node";
+import tailwindcss from "@tailwindcss/vite";
 
 // Server output + the Node adapter (standalone mode) are required starting
 // with the admin authoring UI: `/admin/**` routes need a real request/
@@ -17,4 +18,8 @@ export default defineConfig({
   // content (console.warn only, no error) — found post-merge by sdd-verify;
   // see design.md's Architecture Decisions, "Legacy collections flag".
   legacy: { collectionsBackwardsCompat: true },
+  // Tailwind v4 wired via its dedicated Vite plugin, not a PostCSS config
+  // file — see openspec/changes/theme-system/design.md's Architecture
+  // Decisions and the "Tailwind v4 Vite Wiring" requirement.
+  vite: { plugins: [tailwindcss()] },
 });

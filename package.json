@@ -13,10 +13,12 @@
     "verify:content": "node scripts/verify-content-collections.mjs",
     "verify:frontmatter": "node scripts/verify-frontmatter-round-trip.mjs",
     "verify:admin-server": "node scripts/verify-admin-server.mjs",
+    "verify:theme": "node scripts/verify-theme-build.mjs",
     "build": "astro build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22.20.1",
     "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^10.8.0",
@@ -25,6 +27,7 @@
     "eslint-plugin-boundaries": "^7.1.0",
     "eslint-plugin-sonarjs": "^4.2.0",
     "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.65.0",
     "vitest": "^4.1.10"
