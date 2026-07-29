@@ -34,6 +34,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Theme build proof (real astro build, emitted CSS/HTML inspection)
+        run: npm run verify:theme
+
       - name: Admin access gate proof (real server + real HTTP requests)
         run: npm run verify:admin-server
 

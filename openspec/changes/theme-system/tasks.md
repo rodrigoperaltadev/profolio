@@ -42,19 +42,19 @@ Tracker branch `feature/theme-system` (draft, no-merge until both children land)
 
 ## Phase 2: Ported Components, Layout, Page, Build Verification (Unit 2 — satisfies Natively Ported Components, Shared Layout Entry Point, First Public Route Consumes the Theme System, Minimal Scope Boundary, Build-Time Verification of Theme Output)
 
-- [ ] 2.1 RED: `src/presentation/brutalist/cn.test.ts` — filters out `false`/`undefined` entries, joins remaining truthy string parts with a space — fails, module doesn't exist
-- [ ] 2.2 GREEN: create `src/presentation/brutalist/cn.ts` — local `cn(...parts)` join helper, per design's Architecture Decisions
-- [ ] 2.3 Create `src/presentation/brutalist/BrutalistButton.astro` — native port of my-resume's component; `variant` prop (`primary`/`secondary`), rest-attribute spread, `cn()` for class merging; no React/JSX/`"use client"`; Tailwind utility classes preserved verbatim from the original
-- [ ] 2.4 Create `src/presentation/brutalist/TerminalWindow.astro` — native port; `<slot />` for children; Tailwind utility classes preserved verbatim
-- [ ] 2.5 **Manual visual-fidelity check (mandatory — flagged as untested by design's Testing Strategy):** side-by-side comparison of both rendered components against my-resume's actual rendered originals; confirm no visual drift introduced by the JSX-to-Astro port
-- [ ] 2.6 Create `src/presentation/Layout.astro` — imports `global.css`, sets `data-theme` on `<html>`; first-child `<script is:inline>` (no `defer`/`type="module"`) for FOUC-prevention reading `localStorage` then `prefers-color-scheme`; second `is:inline` script delegating clicks on `[data-theme-toggle]` to toggle `.light-theme`/`html.light-theme` and persist to `localStorage`
-- [ ] 2.7 Create `src/pages/index.astro` — `export const prerender = true`; renders `Layout` + `TerminalWindow` + `BrutalistButton` (secondary variant, `data-theme-toggle`) as the toggle trigger; no `src/content/**` imports
-- [ ] 2.8 Manual smoke test via `astro dev`: load `/`, click the toggle, confirm the theme switches without reload; reload the page and confirm the choice persisted from `localStorage`; clear `localStorage` and confirm fallback to `prefers-color-scheme`
-- [ ] 2.9 Create `scripts/verify-theme-build.mjs` — run a real `astro build`; **first inspect the actual emitted CSS file** to determine the real post-minification format of the sampled token (design flags `lightningcss` may rewrite `#111111` to `#111` or an `oklch(...)` form — do not guess the format) and write the dark-vs-light inequality assertion against that observed format; inspect emitted `index.html` for the `data-theme` attribute and toggle script
-- [ ] 2.10 Add `verify:theme` npm script to `package.json`; add a corresponding step after Build in `.github/workflows/ci.yml`
-- [ ] 2.11 Verify: **actually run** `npm run verify:theme` against the real build (not author-and-assume) — must exit 0
-- [ ] 2.12 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
-- [ ] 2.13 Commit as one work unit; open PR2 → PR1 branch (final child; cascades to tracker → main)
+- [x] 2.1 RED: `src/presentation/brutalist/cn.test.ts` — filters out `false`/`undefined` entries, joins remaining truthy string parts with a space — fails, module doesn't exist
+- [x] 2.2 GREEN: create `src/presentation/brutalist/cn.ts` — local `cn(...parts)` join helper, per design's Architecture Decisions
+- [x] 2.3 Create `src/presentation/brutalist/BrutalistButton.astro` — native port of my-resume's component; `variant` prop (`primary`/`secondary`), rest-attribute spread, `cn()` for class merging; no React/JSX/`"use client"`; Tailwind utility classes preserved verbatim from the original
+- [x] 2.4 Create `src/presentation/brutalist/TerminalWindow.astro` — native port; `<slot />` for children; Tailwind utility classes preserved verbatim
+- [x] 2.5 **Manual visual-fidelity check (mandatory — flagged as untested by design's Testing Strategy):** side-by-side comparison of both rendered components against my-resume's actual rendered originals; confirm no visual drift introduced by the JSX-to-Astro port
+- [x] 2.6 Create `src/presentation/Layout.astro` — imports `global.css`, sets `data-theme` on `<html>`; first-child `<script is:inline>` (no `defer`/`type="module"`) for FOUC-prevention reading `localStorage` then `prefers-color-scheme`; second `is:inline` script delegating clicks on `[data-theme-toggle]` to toggle `.light-theme`/`html.light-theme` and persist to `localStorage`
+- [x] 2.7 Create `src/pages/index.astro` — `export const prerender = true`; renders `Layout` + `TerminalWindow` + `BrutalistButton` (secondary variant, `data-theme-toggle`) as the toggle trigger; no `src/content/**` imports
+- [x] 2.8 Manual smoke test via `astro dev`: load `/`, click the toggle, confirm the theme switches without reload; reload the page and confirm the choice persisted from `localStorage`; clear `localStorage` and confirm fallback to `prefers-color-scheme`
+- [x] 2.9 Create `scripts/verify-theme-build.mjs` — run a real `astro build`; **first inspect the actual emitted CSS file** to determine the real post-minification format of the sampled token (design flags `lightningcss` may rewrite `#111111` to `#111` or an `oklch(...)` form — do not guess the format) and write the dark-vs-light inequality assertion against that observed format; inspect emitted `index.html` for the `data-theme` attribute and toggle script
+- [x] 2.10 Add `verify:theme` npm script to `package.json`; add a corresponding step after Build in `.github/workflows/ci.yml`
+- [x] 2.11 Verify: **actually run** `npm run verify:theme` against the real build (not author-and-assume) — must exit 0
+- [x] 2.12 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
+- [x] 2.13 Commit as one work unit; open PR2 → PR1 branch (final child; cascades to tracker → main)
 
 ## Next Step
 
