@@ -39,11 +39,11 @@ Tracker branch `feature/security-hardening` (draft, no-merge until all children 
 
 ## Phase 2: Auth Gate Evolution + Middleware Wiring (Unit 2 — satisfies Admin Access Gate (Mode-Dependent) [MODIFIED])
 
-- [ ] 2.1 RED: rewrite `src/config/admin-auth.test.ts` for the new `checkAdminAuth(sessionToken, config, store)` signature — local-fallback (unconfigured) → `allowed: true`; full mode + no `expectedToken` → `allowed: false` (fail-closed, regardless of any presented session); full mode + valid session → `allowed: true`; full mode + missing/expired/unknown session → `allowed: false` — fails against the old Basic-Auth signature
-- [ ] 2.2 GREEN: modify `src/config/admin-auth.ts` — change `checkAdminAuth()` signature/behavior per design; remove `parseBasicAuthToken()` (dead code, no remaining caller); keep `timingSafeStringEqual()` unchanged; `AdminAuthResult` drops `status`/`wwwAuthenticate`
-- [ ] 2.3 Modify `src/middleware.ts` — bypass `/admin/login` and `/admin/api/login` before the gate check; read the cookie via `context.cookies.get(SESSION_COOKIE_NAME)?.value`; call `checkAdminAuth()` with `sessionStore`; on denied GET, redirect (303) to `/admin/login` instead of returning 401
-- [ ] 2.4 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint` all exit 0; `boundaries` element rules still hold for `config`/`middleware`
-- [ ] 2.5 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 RED: rewrite `src/config/admin-auth.test.ts` for the new `checkAdminAuth(sessionToken, config, store)` signature — local-fallback (unconfigured) → `allowed: true`; full mode + no `expectedToken` → `allowed: false` (fail-closed, regardless of any presented session); full mode + valid session → `allowed: true`; full mode + missing/expired/unknown session → `allowed: false` — fails against the old Basic-Auth signature
+- [x] 2.2 GREEN: modify `src/config/admin-auth.ts` — change `checkAdminAuth()` signature/behavior per design; remove `parseBasicAuthToken()` (dead code, no remaining caller); keep `timingSafeStringEqual()` unchanged; `AdminAuthResult` drops `status`/`wwwAuthenticate`
+- [x] 2.3 Modify `src/middleware.ts` — bypass `/admin/login` and `/admin/api/login` before the gate check; read the cookie via `context.cookies.get(SESSION_COOKIE_NAME)?.value`; call `checkAdminAuth()` with `sessionStore`; on denied GET, redirect (303) to `/admin/login` instead of returning 401
+- [x] 2.4 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint` all exit 0; `boundaries` element rules still hold for `config`/`middleware`
+- [x] 2.5 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: Login Route, Old-Mechanism Removal Proof, Docs (Unit 3 — satisfies Admin Login Route, Session Issuance and Cookie Attributes [wiring half], Failed-Attempt Lockout Per-Client [wiring half], Documented Secret Rotation Procedure, Documented Revoked-Secret-vs-Active-Session Interaction, Vulnerability Reporting Instructions, No Over-Claiming of Enforcement)
 
