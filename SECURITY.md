@@ -6,6 +6,10 @@ Do not open a public issue for undisclosed vulnerabilities.
 
 ## Secret Rotation
 
+The guidance below is manual and documentation-only — this repo does not enforce rotation
+cadence, send reminders, or track secret age in code. Following it is the operator's
+responsibility.
+
 ### GITHUB_TOKEN (fine-grained PAT)
 Rotate every 90 days, or immediately on suspected compromise. Regenerate in GitHub
 Settings → Developer settings → Fine-grained tokens, update the `GITHUB_TOKEN` value in
