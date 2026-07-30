@@ -1,0 +1,30 @@
+---
+// Admin Login Form — see the spec's "Admin Login Route" requirement and
+// design.md's Data Flow. Native <form method="POST">, no client JS, no
+// framework runtime shipped (same "no client-side framework" convention as
+// `[collection]/new.astro`). This route is the one bypass in
+// `src/middleware.ts`'s gate, so it must render even when the visitor holds
+// no session at all.
+export const prerender = false; // dynamic per request — see astro.config.mjs
+
+const error = Astro.url.searchParams.get("error");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin Login</title>
+  </head>
+  <body>
+    <h1>Admin Login</h1>
+    {error && <p role="alert">{error}</p>}
+    <form method="POST" action="/admin/api/login">
+      <p>
+        <label>
+          Secret <input type="password" name="secret" required autofocus />
+        </label>
+      </p>
+      <button type="submit">Log in</button>
+    </form>
+  </body>
+</html>

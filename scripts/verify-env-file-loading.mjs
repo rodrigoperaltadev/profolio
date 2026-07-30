@@ -63,10 +63,6 @@ function writeThrowawayEnv() {
   writeFileSync(ENV_PATH, `${THROWAWAY_ENV_LINES.join("\n")}\n`, "utf-8");
 }
 
-function basicAuthHeader(password) {
-  return `Basic ${Buffer.from(`admin:${password}`, "utf-8").toString("base64")}`;
-}
-
 function waitForServerReady(child) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -128,12 +124,14 @@ function sleep(ms) {
 
 // See verify-admin-server.mjs: the "Server listening" log line and the
 // socket actually accepting connections aren't perfectly synchronous.
-async function requestAdminPath(headers) {
+// `redirect: "manual"` so the gate's real 303 is observable directly instead
+// of `fetch` silently following it into the login page (which would return
+// 200 regardless of whether the gate is actually active).
+async function requestAdmin(headers) {
   let lastError;
   for (let attempt = 0; attempt < READY_RETRY_ATTEMPTS; attempt++) {
     try {
-      const response = await fetch(`${BASE_URL}/admin`, { headers });
-      return response.status;
+      return await fetch(`${BASE_URL}/admin`, { headers, redirect: "manual" });
     } catch (error) {
       lastError = error;
       await sleep(READY_RETRY_DELAY_MS);
@@ -142,21 +140,52 @@ async function requestAdminPath(headers) {
   throw lastError;
 }
 
+// Post-security-hardening (#8), the admin gate is session-cookie-based, not
+// Basic Auth — sending any Authorization header no longer has any effect.
+// Astro's built-in `security.checkOrigin` also rejects form POSTs missing an
+// `Origin` header as cross-site; see verify-admin-server.mjs's identical note.
+async function postLogin(secret) {
+  return fetch(`${BASE_URL}/admin/api/login`, {
+    method: "POST",
+    redirect: "manual",
+    headers: { "content-type": "application/x-www-form-urlencoded", origin: BASE_URL },
+    body: new URLSearchParams({ secret }).toString(),
+  });
+}
+
 async function proveEnvFileValueIsObserved() {
   const server = await startServerViaEnvFile();
   try {
-    const wrongStatus = await requestAdminPath({ authorization: basicAuthHeader("wrong-token") });
+    // Unauthenticated request is redirected to the login page — this can
+    // only happen if GITHUB_TOKEN/GITHUB_REPO_OWNER/GITHUB_REPO_NAME were
+    // genuinely loaded from .env (otherwise the app would be in
+    // local-fallback mode, with no gate at all, and this would be a 200).
+    const unauthedResponse = await requestAdmin({});
     assertProof(
-      wrongStatus === 401,
-      `expected 401 with wrong Basic Auth credentials, got ${wrongStatus}`,
+      unauthedResponse.status === 303 && unauthedResponse.headers.get("location") === "/admin/login",
+      `expected a 303 redirect to /admin/login (proving the .env-loaded publishing vars activated the gate), got ${unauthedResponse.status} / ${unauthedResponse.headers.get("location")}`,
     );
-    const correctStatus = await requestAdminPath({ authorization: basicAuthHeader(ADMIN_TOKEN) });
+
+    // Logging in with the EXACT .env-configured ADMIN_ACCESS_TOKEN value
+    // proves --env-file loaded that specific value, not just that some
+    // publishing vars were present.
+    const loginResponse = await postLogin(ADMIN_TOKEN);
     assertProof(
-      correctStatus !== 401,
-      `expected non-401 with the .env-file-configured ADMIN_ACCESS_TOKEN, got ${correctStatus}`,
+      loginResponse.status === 303 && loginResponse.headers.get("location") === "/admin",
+      `expected login with the .env-configured ADMIN_ACCESS_TOKEN to succeed (303 to /admin), got ${loginResponse.status} / ${loginResponse.headers.get("location")}`,
     );
+    const setCookie = loginResponse.headers.get("set-cookie");
+    assertProof(Boolean(setCookie), "expected a session cookie to be issued on successful login");
+    const cookiePair = setCookie.split(";")[0].trim();
+
+    const authedResponse = await requestAdmin({ cookie: cookiePair });
+    assertProof(
+      authedResponse.status !== 303,
+      `expected the session cookie to grant access (non-303), got ${authedResponse.status}`,
+    );
+
     console.log(
-      `[env-file-loading-proof] --env-file value observed by spawned process: wrong→401, .env-configured→${correctStatus} — OK`,
+      "[env-file-loading-proof] --env-file value observed by spawned process: gate active pre-login, .env-configured secret logs in and grants access — OK",
     );
   } finally {
     await stopServer(server);
