@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^11.0.3",
-    "astro": "^7.1.4",
+    "astro": "^7.1.5",
     "zod": "^4.4.3"
   }
 }
