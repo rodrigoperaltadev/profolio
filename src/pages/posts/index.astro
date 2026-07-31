@@ -1,0 +1,43 @@
+---
+// Public /posts listing route — see openspec/changes/public-homepage/design.md's
+// Data Flow and File Changes: literal per-collection route (no [collection]
+// dynamic segment), filtered/sorted via Unit 1's shared helpers. See the
+// content-listing spec's "Literal Per-Collection Listing Routes" and
+// "Date-Descending Listing and Teaser Sort" requirements, and the
+// public-content-visibility spec's "Filter Applied at the /posts Listing".
+export const prerender = true;
+
+import { getCollection } from "astro:content";
+import Layout from "../../presentation/Layout.astro";
+import TerminalWindow from "../../presentation/brutalist/TerminalWindow.astro";
+import { isPubliclyVisible } from "../../content/visibility";
+import { toContentEntry } from "../../content/_mappers/to-content-entry";
+import { toSlug } from "../../content/slug";
+import { byDateDesc } from "../../content/sort";
+
+const entries = (await getCollection("posts"))
+  .filter(isPubliclyVisible)
+  .map(toContentEntry)
+  .sort(byDateDesc);
+---
+
+<Layout title="Posts — Profolio">
+  <main class="min-h-screen p-4">
+    <TerminalWindow>
+      <h1 class="text-text-primary font-mono text-2xl font-bold">Posts</h1>
+      {entries.length > 0 ? (
+        <ul class="mt-4 space-y-2 font-mono">
+          {entries.map((entry) => (
+            <li>
+              <a href={`/posts/${toSlug(entry.id)}`} class="text-accent underline">
+                {entry.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-text-secondary font-mono mt-4">No posts published yet.</p>
+      )}
+    </TerminalWindow>
+  </main>
+</Layout>
