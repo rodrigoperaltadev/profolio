@@ -2,6 +2,12 @@
 
 A reusable, themeable content/blog engine. Content is authored and published via git commits (git-as-CMS) — clone it, configure it, and deploy it for your own site.
 
+## Vision
+
+Clone this repo, run the setup wizard, fill in your own profile, pick a theme, and deploy — end up with a personal site/blog like [rodrigoperalta.ar](https://rodrigoperalta.ar). profolio is not a hosting platform or a SaaS: there is no shared backend and no cross-site accounts. You own your clone, your git history, and your content.
+
+Your content (profile, posts, projects) lives as plain files in your own repo — a hand-maintained, always-current source of truth, closer to a living CV than a database record. Themes are swappable presets, not baked-in styling, so your site's look is a config choice, not a fork you have to maintain.
+
 ## Stack
 
 Astro.
