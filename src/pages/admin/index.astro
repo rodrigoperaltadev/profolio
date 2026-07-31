@@ -8,6 +8,7 @@ export const prerender = false; // dynamic per request — see astro.config.mjs
 
 import { getCollection } from "astro:content";
 import { toContentEntry } from "../../content/_mappers/to-content-entry";
+import { getProfile } from "../../content/profile";
 import { isPublishingConfigured } from "../../config/publishing-config";
 import CollectionSection from "./_lib/collection-section.astro";
 import type { ContentEntry } from "../../content/entry";
@@ -18,6 +19,10 @@ interface CollectionGroup {
   entries: ContentEntry[];
 }
 
+// `profile` is deliberately NOT a third `CollectionGroup` entry here — it's
+// exempt from the shared `ContentEntry`/`CollectionSection` contract (see
+// design.md's "`admin/index.astro` profile touch point" decision), so it
+// gets its own summary block below instead, calling `getProfile()` directly.
 const groups: CollectionGroup[] = [
   { collection: "posts", entries: (await getCollection("posts")).map(toContentEntry) },
   {
@@ -25,6 +30,8 @@ const groups: CollectionGroup[] = [
     entries: (await getCollection("projects")).map(toContentEntry),
   },
 ];
+
+const profile = await getProfile();
 
 const params = Astro.url.searchParams;
 const showCommitReminder =
@@ -60,6 +67,21 @@ const showCommitReminder =
         <p role="status">Marked "{params.get("deleted")}" as deleted.</p>
       )
     }
+
+    <section>
+      <h2>Profile</h2>
+      {
+        profile ? (
+          <p>
+            {profile.name} — <a href="/admin/profile/edit">Edit profile</a>
+          </p>
+        ) : (
+          <p>
+            No profile yet — <a href="/admin/profile/setup">Set up your profile</a>
+          </p>
+        )
+      }
+    </section>
 
     {
       groups.map((group: CollectionGroup) => (

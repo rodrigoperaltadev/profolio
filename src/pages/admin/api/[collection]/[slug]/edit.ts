@@ -14,7 +14,14 @@ import { writeErrorMessage } from "../../../_lib/write-error-message";
 export const POST: APIRoute = async ({ params, request, redirect }) => {
   const collection = parseCollectionParam(params.collection);
   const slug = params.slug;
-  if (!collection || !slug) {
+  // `profile` is excluded here even though `parseCollectionParam` now
+  // accepts it (profile-wizard change, task 2.2): this generic route reads
+  // back `existing.data.deleted`, a field the shared `ContentEntry` contract
+  // requires but `profileSchema` deliberately omits — see the "Profile Is
+  // Exempt from the Shared Entry Contract" spec requirement. Profile edits
+  // go through their own dedicated route instead (`/admin/api/profile/edit`,
+  // Phase 3).
+  if (!collection || collection === "profile" || !slug) {
     return new Response("Not Found", { status: 404 });
   }
 

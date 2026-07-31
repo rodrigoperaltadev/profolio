@@ -10,6 +10,10 @@ describe("parseCollectionParam", () => {
     expect(parseCollectionParam("projects")).toBe("projects");
   });
 
+  it("accepts 'profile'", () => {
+    expect(parseCollectionParam("profile")).toBe("profile");
+  });
+
   it("rejects an unknown collection name", () => {
     expect(parseCollectionParam("comments")).toBeNull();
   });
