@@ -1,14 +1,11 @@
-# Public Pages Specification
+# Delta for Public Pages
 
-## Purpose
-
-Defines the public home page (`/`) with profile hero, recent-entries teaser, no-profile placeholder, and minimal site-wide navigation.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: First Public Route Consumes the Theme System
 
 `src/pages/index.astro` MUST declare `export const prerender = true`, and MUST render `Layout.astro`. When a `profile` entry exists, it MUST render a profile hero (via `getProfile()`, reusing `TerminalWindow`) followed by a recent-entries teaser; when no `profile` entry exists, it MUST render the "no profile yet" placeholder defined below instead. In both states, the page MUST continue to expose the existing `data-theme-toggle` trigger wired to `Layout.astro`'s toggle mechanism.
+(Previously: rendered a single bare `TerminalWindow` proof containing only a static message and the `BrutalistButton` toggle trigger, with no profile or content-collection rendering of any kind.)
 
 #### Scenario: Page is statically prerendered
 
@@ -36,13 +33,16 @@ Defines the public home page (`/`) with profile hero, recent-entries teaser, no-
 
 ### Requirement: Minimal Scope Boundary
 
-This requirement is explicitly **superseded**: `src/pages/index.astro` MAY now import from `src/content/**` (via `getProfile()` and `getCollection()`) and render real profile and content-collection data. The prior prohibition on any content-collection dependency no longer applies to this route.
+This requirement is explicitly **superseded**, not silently contradicted: `src/pages/index.astro` MAY now import from `src/content/**` (via `getProfile()` and `getCollection()`) and render real profile and content-collection data. The prior prohibition on any content-collection dependency no longer applies to this route.
+(Previously: `index.astro` MUST NOT implement a full home page, blog layout, or any content-collection rendering, and MUST NOT import from `src/content/**`; it existed solely to prove the theme system rendered correctly.)
 
 #### Scenario: Page now depends on content collections and profile data
 
 - GIVEN `src/pages/index.astro`
 - WHEN its imports are inspected
 - THEN it imports `getProfile()` and `getCollection()` from `src/content/**` and renders real profile and/or entry data, replacing the old no-content-dependency restriction
+
+## ADDED Requirements
 
 ### Requirement: No-Profile Public Placeholder
 
