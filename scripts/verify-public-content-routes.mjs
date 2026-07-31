@@ -20,6 +20,13 @@ const distIndexPath = `${rootDir}/dist/client/index.html`;
 const distPostsIndexPath = `${rootDir}/dist/client/posts/index.html`;
 const distProjectsIndexPath = `${rootDir}/dist/client/projects/index.html`;
 
+// Detail-route paths for the existing real sample entries (Unit 4) — proves
+// the extensionless-slug-to-suffixed-`entry.id` resolution against real
+// build output, per the content-listing spec's "Slug Shape Handles the
+// .md-Suffix Entry Id" requirement's build-verified half.
+const distPostDetailPath = `${rootDir}/dist/client/posts/hello-world/index.html`;
+const distProjectDetailPath = `${rootDir}/dist/client/projects/profolio/index.html`;
+
 // Listing-route fixtures — one older-but-visible entry (to prove sort order
 // against the existing sample content's date) plus one deleted and one draft
 // entry (to prove exclusion), seeded in EACH collection per the
@@ -32,6 +39,11 @@ const OLDER_VISIBLE_PROJECT_PATH = `${rootDir}/src/content/projects/public-conte
 const DELETED_PROJECT_PATH = `${rootDir}/src/content/projects/public-content-routes-deleted.md`;
 const DRAFT_PROJECT_PATH = `${rootDir}/src/content/projects/public-content-routes-draft.md`;
 
+// Real sample-content titles (hello-world.md / profolio.md), shared across
+// the sort-order proof and the real-slug detail-route proof to satisfy
+// sonarjs/no-duplicate-string.
+const SAMPLE_POST_TITLE = "Hello World";
+const SAMPLE_PROJECT_TITLE = "Profolio";
 const OLDER_VISIBLE_POST_TITLE = "Older Visible Post Fixture";
 const DELETED_POST_TITLE = "Deleted Post Fixture";
 const DRAFT_POST_TITLE = "Draft Post Fixture";
@@ -175,6 +187,18 @@ const LISTING_FIXTURES = [
   },
 ];
 
+// Detail-route dist paths for the deleted/draft listing fixtures above —
+// `getStaticPaths()` must generate NO path at all for these, not merely
+// omit them from a listing. See the public-content-visibility spec's
+// "Filter Applied at /posts/[slug]'s getStaticPaths()" and "Filter Applied
+// at /projects/[slug]'s getStaticPaths()" requirements.
+const EXCLUDED_DETAIL_PATHS = [
+  `${rootDir}/dist/client/posts/public-content-routes-deleted/index.html`,
+  `${rootDir}/dist/client/posts/public-content-routes-draft/index.html`,
+  `${rootDir}/dist/client/projects/public-content-routes-deleted/index.html`,
+  `${rootDir}/dist/client/projects/public-content-routes-draft/index.html`,
+];
+
 function seedListingFixtures() {
   for (const fixture of LISTING_FIXTURES) {
     writeFileSync(
@@ -221,21 +245,21 @@ function proveListingRoutesFilterAndSort() {
     );
 
     assertProof(
-      postsHtml.includes("Hello World") && postsHtml.includes(OLDER_VISIBLE_POST_TITLE),
+      postsHtml.includes(SAMPLE_POST_TITLE) && postsHtml.includes(OLDER_VISIBLE_POST_TITLE),
       `expected /posts to include both visible entries, got: ${postsHtml}`,
     );
     assertProof(
-      postsHtml.indexOf("Hello World") < postsHtml.indexOf(OLDER_VISIBLE_POST_TITLE),
+      postsHtml.indexOf(SAMPLE_POST_TITLE) < postsHtml.indexOf(OLDER_VISIBLE_POST_TITLE),
       "expected /posts to list the newer entry (hello-world.md, 2026-07-27) before the older fixture (2026-01-01)",
     );
 
     assertProof(
-      projectsHtml.includes("Profolio") &&
+      projectsHtml.includes(SAMPLE_PROJECT_TITLE) &&
         projectsHtml.includes(OLDER_VISIBLE_PROJECT_TITLE),
       `expected /projects to include both visible entries, got: ${projectsHtml}`,
     );
     assertProof(
-      projectsHtml.indexOf("Profolio") < projectsHtml.indexOf(OLDER_VISIBLE_PROJECT_TITLE),
+      projectsHtml.indexOf(SAMPLE_PROJECT_TITLE) < projectsHtml.indexOf(OLDER_VISIBLE_PROJECT_TITLE),
       "expected /projects to list the newer entry (profolio.md, 2026-07-27) before the older fixture (2026-01-01)",
     );
 
@@ -248,10 +272,78 @@ function proveListingRoutesFilterAndSort() {
   }
 }
 
+// Satisfies content-listing's "Detail Routes via getStaticPaths()" and
+// "Slug Shape Handles the .md-Suffix Entry Id" (build-verified half)
+// requirements — real astro build, real extensionless
+// dist/client/**/<slug>/index.html assertions against the existing real
+// sample entries (hello-world.md / profolio.md), confirming
+// getStaticPaths()'s `toSlug(entry.id)` params resolve to real output paths
+// and the rendered page carries the correct title/body.
+function proveDetailRoutesResolveRealSlug() {
+  cleanAstroBuildState();
+  runAstroBuild();
+  try {
+    assertProof(
+      existsSync(distPostDetailPath),
+      `expected ${distPostDetailPath} to exist for the real "hello-world" post entry`,
+    );
+    const postHtml = readFileSync(distPostDetailPath, "utf-8");
+    assertProof(
+      postHtml.includes(SAMPLE_POST_TITLE) &&
+        postHtml.includes("First sample post proving"),
+      `expected /posts/hello-world to render the entry's title and body, got: ${postHtml}`,
+    );
+
+    assertProof(
+      existsSync(distProjectDetailPath),
+      `expected ${distProjectDetailPath} to exist for the real "profolio" project entry`,
+    );
+    const projectHtml = readFileSync(distProjectDetailPath, "utf-8");
+    assertProof(
+      projectHtml.includes(SAMPLE_PROJECT_TITLE) &&
+        projectHtml.includes("Git-as-CMS content engine"),
+      `expected /projects/profolio to render the entry's title and body, got: ${projectHtml}`,
+    );
+
+    console.log(
+      "[public-content-routes-proof] /posts/[slug] and /projects/[slug] resolve real .md-suffixed ids to extensionless slugs — OK",
+    );
+  } finally {
+    cleanAstroBuildState();
+  }
+}
+
+// Satisfies public-content-visibility's "Filter Applied at /posts/[slug]'s
+// getStaticPaths()" and "Filter Applied at /projects/[slug]'s
+// getStaticPaths()" requirements — confirms getStaticPaths() generates NO
+// path whatsoever for deleted/draft entries, not merely that they're
+// absent from a listing.
+function proveDetailRoutesExcludeDeletedAndDraft() {
+  seedListingFixtures();
+  try {
+    cleanAstroBuildState();
+    runAstroBuild();
+    for (const excludedPath of EXCLUDED_DETAIL_PATHS) {
+      assertProof(
+        !existsSync(excludedPath),
+        `expected getStaticPaths() to generate NO output at all for a deleted/draft entry, but found: ${excludedPath}`,
+      );
+    }
+    console.log(
+      "[public-content-routes-proof] /posts/[slug] and /projects/[slug] generate no path at all for deleted/draft entries — OK",
+    );
+  } finally {
+    removeListingFixtures();
+    cleanAstroBuildState();
+  }
+}
+
 function main() {
   proveHeroRendersWhenProfileExists();
   provePlaceholderRendersWhenNoProfile();
   proveListingRoutesFilterAndSort();
+  proveDetailRoutesResolveRealSlug();
+  proveDetailRoutesExcludeDeletedAndDraft();
   console.log("[public-content-routes-proof] all public-content-routes proofs passed");
 }
 

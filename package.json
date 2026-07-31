@@ -20,6 +20,7 @@
     "verify:theme": "node scripts/verify-theme-build.mjs",
     "verify:env-file": "node scripts/verify-env-file-loading.mjs",
     "verify:public-routes": "node scripts/verify-public-content-routes.mjs",
+    "verify:admin-listing": "node scripts/verify-admin-listing-unfiltered.mjs",
     "build": "astro build"
   },
   "devDependencies": {
