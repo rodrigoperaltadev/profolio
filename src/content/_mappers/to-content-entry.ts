@@ -26,7 +26,12 @@ const mappers: { posts: Mapper<"posts">; projects: Mapper<"projects"> } = {
   }),
 };
 
-export function toContentEntry<C extends CollectionKey>(
+// Constrained to "posts" | "projects" (not the full, now-3-wide
+// `CollectionKey`) so passing a `profile` entry is a compile-time error —
+// this is the mechanism that satisfies the content-view-contract spec's
+// "Profile Is Exempt from the Shared Entry Contract" requirement; the
+// `mappers` table itself stays untouched (see profile.ts's own comment).
+export function toContentEntry<C extends "posts" | "projects">(
   entry: CollectionEntry<C>,
 ): ContentEntry {
   // `mappers[entry.collection]` narrows via a generic index (`C`), which TS

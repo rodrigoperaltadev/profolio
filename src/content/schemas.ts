@@ -23,3 +23,15 @@ export const projectsSchema = z.object({
   draft: z.boolean().default(false),
   deleted: z.boolean().default(false),
 });
+
+// No cardinality constraint here by design — singleton-ness is enforced
+// only by the write/read path always targeting the fixed slug "me", never
+// at the schema level (see design.md's Architecture Decisions and the
+// content-schema spec's "Profile Singleton Is Convention-Only" requirement).
+export const profileSchema = z.object({
+  name: z.string(),
+  role: z.string(),
+  bio: z.string(),
+  email: z.string(),
+  links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
+});
