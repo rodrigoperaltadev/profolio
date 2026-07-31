@@ -72,6 +72,22 @@ const error = Astro.url.searchParams.get("error");
             <button type="submit">Reset profile</button>
           </form>
 
+          <h2>Export / Import</h2>
+          <p>
+            <a href="/admin/api/profile/export" download="profile.md">
+              Download profile.md
+            </a>
+          </p>
+          <form method="POST" action="/admin/api/profile/import" enctype="multipart/form-data">
+            <p>
+              <label>
+                Import a previously exported <code>profile.md</code>
+                <input type="file" name="file" accept=".md,text/markdown" required />
+              </label>
+            </p>
+            <button type="submit">Import profile</button>
+          </form>
+
           <p>
             <a href="/admin">Back to admin</a>
           </p>

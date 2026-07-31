@@ -132,6 +132,11 @@ export default tseslint.config(
         fetch: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
+        // profile-wizard change (task 5.5): the export/import proof script
+        // builds a real multipart upload via Node's global `FormData`/`Blob`
+        // (both available since Node 18, no new dependency).
+        FormData: "readonly",
+        Blob: "readonly",
       },
     },
     rules: {

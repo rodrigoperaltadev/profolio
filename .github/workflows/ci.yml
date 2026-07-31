@@ -40,6 +40,9 @@ jobs:
       - name: Admin access gate proof (real server + real HTTP requests)
         run: npm run verify:admin-server
 
+      - name: Profile export/import round-trip proof (real server + real HTTP requests)
+        run: npm run verify:profile-export-import
+
       - name: Content collections proof (real getCollection())
         run: npm run verify:content
 
