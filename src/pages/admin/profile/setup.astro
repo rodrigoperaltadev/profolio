@@ -1,0 +1,57 @@
+---
+// Profile Setup form — see the profile-identity spec's "Profile Setup and
+// Edit UI" requirement and admin-authoring's "Profile Setup and Edit Routes"
+// requirement. Native <form method="POST">, no client JS, no framework
+// runtime (same "no client-side UI framework" constraint as new.astro).
+// Always targets collection "profile", slug "me" — no [slug] param, no slug
+// input field (see the profile-identity spec's "Fixed Slug Singleton
+// Convention" requirement).
+export const prerender = false; // dynamic per request — see astro.config.mjs
+
+const error = Astro.url.searchParams.get("error");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Set up your profile</title>
+  </head>
+  <body>
+    <h1>Set up your profile</h1>
+    {error && <p role="alert">{error}</p>}
+    <form method="POST" action="/admin/api/profile/create">
+      <p>
+        <label>
+          Name <input type="text" name="name" required />
+        </label>
+      </p>
+      <p>
+        <label>
+          Role <input type="text" name="role" required />
+        </label>
+      </p>
+      <p>
+        <label>
+          Bio <textarea name="bio" required></textarea>
+        </label>
+      </p>
+      <p>
+        <label>
+          Email <input type="email" name="email" required />
+        </label>
+      </p>
+      <p>
+        <label>
+          Links
+          <textarea name="links" aria-describedby="links-help"></textarea>
+        </label>
+        <br />
+        <small id="links-help">
+          One link per line, in the form <code>label | url</code> — for example:
+          <code>GitHub | https://github.com/x</code>
+        </small>
+      </p>
+      <button type="submit">Create profile</button>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+---
+// Profile Edit form — see the profile-identity spec's "Profile Setup and
+// Edit UI" requirement and admin-authoring's "Profile Setup and Edit Routes"
+// requirement. Prefilled from `getProfile()`; also hosts the reset action
+// (profile-identity spec's "Reset via Edit, No New Port Method"
+// requirement — reset is a plain POST to its own dedicated endpoint, same
+// "own endpoint wrapping a specific edit() shape" precedent as delete.astro).
+// Reached only once a profile exists — `src/middleware.ts`'s first-run
+// redirect sends any earlier GET here to `/admin/profile/setup` instead,
+// since this path is not in `FIRST_RUN_EXEMPT_PATHS`.
+export const prerender = false; // dynamic per request — see astro.config.mjs
+
+import { getProfile } from "../../../content/profile";
+import { linksToTextarea } from "../_lib/profile-form-fields";
+
+const profile = await getProfile();
+if (!profile) Astro.response.status = 404;
+const error = Astro.url.searchParams.get("error");
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Edit your profile</title>
+  </head>
+  <body>
+    {
+      !profile ? (
+        <p>No profile exists yet — <a href="/admin/profile/setup">set one up</a>.</p>
+      ) : (
+        <>
+          <h1>Edit your profile</h1>
+          {error && <p role="alert">{error}</p>}
+          <form method="POST" action="/admin/api/profile/edit">
+            <p>
+              <label>
+                Name <input type="text" name="name" required value={profile.name} />
+              </label>
+            </p>
+            <p>
+              <label>
+                Role <input type="text" name="role" required value={profile.role} />
+              </label>
+            </p>
+            <p>
+              <label>
+                Bio <textarea name="bio" required>{profile.bio}</textarea>
+              </label>
+            </p>
+            <p>
+              <label>
+                Email
+                <input type="email" name="email" required value={profile.email} />
+              </label>
+            </p>
+            <p>
+              <label>
+                Links
+                <textarea name="links" aria-describedby="links-help">{linksToTextarea(profile.links)}</textarea>
+              </label>
+              <br />
+              <small id="links-help">
+                One link per line, in the form <code>label | url</code> — for example:
+                <code>GitHub | https://github.com/x</code>
+              </small>
+            </p>
+            <button type="submit">Save</button>
+          </form>
+
+          <form method="POST" action="/admin/api/profile/reset">
+            <p>Reset wipes all profile fields back to empty — it does not delete the entry.</p>
+            <button type="submit">Reset profile</button>
+          </form>
+
+          <p>
+            <a href="/admin">Back to admin</a>
+          </p>
+        </>
+      )
+    }
+  </body>
+</html>
