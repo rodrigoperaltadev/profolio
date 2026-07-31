@@ -8,11 +8,11 @@ Defines the per-collection Astro Content Collection schemas (`posts`, `projects`
 
 ### Requirement: Content Collections Configuration
 
-The system MUST define `posts` and `projects` as Astro Content Collections via `defineCollection` with a Zod schema, registered in `src/content/config.ts`.
+The system MUST define `posts` and `projects` as Astro Content Collections via `defineCollection` with a Zod schema, registered in `src/content.config.ts`.
 
 #### Scenario: Both collections are registered
 
-- GIVEN `src/content/config.ts`
+- GIVEN `src/content.config.ts`
 - WHEN the Astro content config is loaded
 - THEN it exports a `collections` object containing both `posts` and `projects`, each defined via `defineCollection` with a Zod `schema`
 
