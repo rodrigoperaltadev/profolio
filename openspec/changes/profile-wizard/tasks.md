@@ -75,11 +75,11 @@ Tracker branch `feature/profile-wizard` (draft, no-merge until all children land
 
 ## Phase 4: `parseFrontmatterBlock()` Import Parser Module (Unit 4 — satisfies groundwork for Import Runs Through the Same Validation-Before-Write Path)
 
-- [ ] 4.1 RED: `src/publishing/parse-frontmatter-block.test.ts` — promote and extend `frontmatter.test.ts`'s existing test-only reverse parser: parses a real `buildMarkdownFile()`-produced string (frontmatter + body, including the nested `links` block from 1.10) back into `{frontmatter, body}`; a genuinely malformed/hand-edited string returns a clean error result, never throws
-- [ ] 4.2 GREEN: create `src/publishing/parse-frontmatter-block.ts` — `parseFrontmatterBlock()`, scoped strictly to this app's own grammar (no new `yaml` npm dependency)
-- [ ] 4.3 **Real round-trip verification (carry-forward, mandatory — not synthetic fixtures only):** build a real `Profile`, run it through `buildMarkdownFile()` → `parseFrontmatterBlock()` → `parseFrontmatter("profile", ...)`, confirm the result matches the original data including `links`; separately feed a hand-edited/malformed string and confirm rejection without corrupting any existing profile state
-- [ ] 4.4 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint` all exit 0
-- [ ] 4.5 Commit as one work unit; open PR4 → PR3 branch
+- [x] 4.1 RED: `src/publishing/parse-frontmatter-block.test.ts` — promote and extend `frontmatter.test.ts`'s existing test-only reverse parser: parses a real `buildMarkdownFile()`-produced string (frontmatter + body, including the nested `links` block from 1.10) back into `{frontmatter, body}`; a genuinely malformed/hand-edited string returns a clean error result, never throws
+- [x] 4.2 GREEN: create `src/publishing/parse-frontmatter-block.ts` — `parseFrontmatterBlock()`, scoped strictly to this app's own grammar (no new `yaml` npm dependency)
+- [x] 4.3 **Real round-trip verification (carry-forward, mandatory — not synthetic fixtures only):** build a real `Profile`, run it through `buildMarkdownFile()` → `parseFrontmatterBlock()` → `parseFrontmatter("profile", ...)`, confirm the result matches the original data including `links`; separately feed a hand-edited/malformed string and confirm rejection without corrupting any existing profile state
+- [x] 4.4 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint` all exit 0
+- [x] 4.5 Commit as one work unit; open PR4 → PR3 branch
 
 ## Phase 5: Export/Import Routes + Wiring (Unit 5 — satisfies Export Reuses the Existing Build Pipeline, Import Runs Through the Same Validation-Before-Write Path as a Normal Edit, Import Inherits No New Port Capability, Profile Export and Import Routes)
 
