@@ -19,6 +19,7 @@
     "verify:profile-export-import": "node scripts/verify-profile-export-import.mjs",
     "verify:theme": "node scripts/verify-theme-build.mjs",
     "verify:env-file": "node scripts/verify-env-file-loading.mjs",
+    "verify:public-routes": "node scripts/verify-public-content-routes.mjs",
     "build": "astro build"
   },
   "devDependencies": {
