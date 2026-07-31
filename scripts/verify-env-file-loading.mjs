@@ -178,10 +178,14 @@ async function proveEnvFileValueIsObserved() {
     assertProof(Boolean(setCookie), "expected a session cookie to be issued on successful login");
     const cookiePair = setCookie.split(";")[0].trim();
 
+    // profile-wizard fallout: a valid session may still legitimately 303 to
+    // the profile first-run setup flow (no profile exists in this proof's
+    // fixture) — this only asserts the session itself isn't rejected by the
+    // auth gate (no 401, no redirect back to /admin/login).
     const authedResponse = await requestAdmin({ cookie: cookiePair });
     assertProof(
-      authedResponse.status !== 303,
-      `expected the session cookie to grant access (non-303), got ${authedResponse.status}`,
+      authedResponse.status !== 401 && authedResponse.headers.get("location") !== "/admin/login",
+      `expected the session cookie to grant access (no auth-gate redirect), got ${authedResponse.status} / ${authedResponse.headers.get("location")}`,
     );
 
     console.log(
