@@ -11,7 +11,15 @@ export const prerender = false; // dynamic per request — see astro.config.mjs
 import { getEntry } from "astro:content";
 import { parseCollectionParam } from "../../_lib/collection-param";
 
-const collection = parseCollectionParam(Astro.params.collection);
+const parsedCollection = parseCollectionParam(Astro.params.collection);
+// `profile` is excluded here even though `parseCollectionParam` now accepts
+// it (profile-wizard change, task 2.2): this page renders `entry.data.stack`/
+// `.link`/`.tags`/`.date`, fields the shared entry contract requires but
+// `profileSchema` deliberately omits — see the "Profile Is Exempt from the
+// Shared Entry Contract" spec requirement, same rationale as the generic
+// edit API route's guard. Profile gets its own dedicated edit page instead
+// (`/admin/profile/edit`, Phase 3).
+const collection = parsedCollection === "profile" ? null : parsedCollection;
 const slug = Astro.params.slug;
 const entry = collection && slug ? await getEntry(collection, `${slug}.md`) : undefined;
 if (!collection || !slug || !entry) Astro.response.status = 404;

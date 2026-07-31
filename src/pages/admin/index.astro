@@ -8,6 +8,7 @@ export const prerender = false; // dynamic per request — see astro.config.mjs
 
 import { getCollection } from "astro:content";
 import { toContentEntry } from "../../content/_mappers/to-content-entry";
+import { getProfile } from "../../content/profile";
 import { isPublishingConfigured } from "../../config/publishing-config";
 import CollectionSection from "./_lib/collection-section.astro";
 import type { ContentEntry } from "../../content/entry";
@@ -18,6 +19,10 @@ interface CollectionGroup {
   entries: ContentEntry[];
 }
 
+// `profile` is deliberately NOT a third `CollectionGroup` entry here — it's
+// exempt from the shared `ContentEntry`/`CollectionSection` contract (see
+// design.md's "`admin/index.astro` profile touch point" decision), so it
+// gets its own summary block below instead, calling `getProfile()` directly.
 const groups: CollectionGroup[] = [
   { collection: "posts", entries: (await getCollection("posts")).map(toContentEntry) },
   {
@@ -26,10 +31,24 @@ const groups: CollectionGroup[] = [
   },
 ];
 
+const profile = await getProfile();
+
 const params = Astro.url.searchParams;
+const hasProfileWrite =
+  params.has("profile-created") || params.has("profile-updated") || params.has("profile-reset");
 const showCommitReminder =
   !isPublishingConfigured() &&
-  (params.has("created") || params.has("updated") || params.has("deleted"));
+  (params.has("created") ||
+    params.has("updated") ||
+    params.has("deleted") ||
+    hasProfileWrite);
+// Build/Deploy Detection Lag Disclosure (admin-authoring spec) — in GitHub
+// mode, a just-saved/reset profile won't clear the first-run redirect until
+// the next build/deploy, since `getCollection()`/`getEntry()` only reflect
+// the last deploy. Local-fallback mode reads its own disk writes
+// immediately, so it gets the existing commit reminder above instead, never
+// this notice.
+const showDeployLagNotice = isPublishingConfigured() && hasProfileWrite;
 ---
 
 <html lang="en">
@@ -60,6 +79,31 @@ const showCommitReminder =
         <p role="status">Marked "{params.get("deleted")}" as deleted.</p>
       )
     }
+    {
+      showDeployLagNotice && (
+        <p role="status">
+          Profile saved, but this won't be reflected here until the next build/deploy.
+        </p>
+      )
+    }
+    {params.has("profile-created") && <p role="status">Profile created.</p>}
+    {params.has("profile-updated") && <p role="status">Profile updated.</p>}
+    {params.has("profile-reset") && <p role="status">Profile reset.</p>}
+
+    <section>
+      <h2>Profile</h2>
+      {
+        profile ? (
+          <p>
+            {profile.name} — <a href="/admin/profile/edit">Edit profile</a>
+          </p>
+        ) : (
+          <p>
+            No profile yet — <a href="/admin/profile/setup">Set up your profile</a>
+          </p>
+        )
+      }
+    </section>
 
     {
       groups.map((group: CollectionGroup) => (

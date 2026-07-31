@@ -2,7 +2,7 @@
 // `src/content/entry.ts` (see design.md's Interfaces/Contracts). TS
 // exhaustiveness of the `WriteError` discriminated union is
 // compiler-enforced, not re-tested.
-export type Collection = "posts" | "projects";
+export type Collection = "posts" | "projects" | "profile";
 
 export interface WriteEntryInput {
   readonly collection: Collection;
