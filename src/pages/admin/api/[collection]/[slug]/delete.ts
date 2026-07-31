@@ -13,7 +13,14 @@ import { writeErrorMessage } from "../../../_lib/write-error-message";
 export const POST: APIRoute = async ({ params, redirect }) => {
   const collection = parseCollectionParam(params.collection);
   const slug = params.slug;
-  if (!collection || !slug) {
+  // `profile` is excluded here even though `parseCollectionParam` now accepts
+  // it (profile-wizard change, task 2.2): `profileSchema` has no `deleted`
+  // field (see "Profile Is Exempt from the Shared Entry Contract"), so this
+  // route's `{ ...entry.data, deleted: true }` would silently no-op instead
+  // of deleting anything, while still claiming success. The singleton has no
+  // delete route at all — reset (`/admin/api/profile/reset`, Phase 3) is its
+  // equivalent. Explicit, not incidental — see sdd-verify's profile-wizard report.
+  if (!collection || collection === "profile" || !slug) {
     return new Response("Not Found", { status: 404 });
   }
 

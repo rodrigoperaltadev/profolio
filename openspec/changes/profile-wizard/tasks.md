@@ -83,14 +83,14 @@ Tracker branch `feature/profile-wizard` (draft, no-merge until all children land
 
 ## Phase 5: Export/Import Routes + Wiring (Unit 5 — satisfies Export Reuses the Existing Build Pipeline, Import Runs Through the Same Validation-Before-Write Path as a Normal Edit, Import Inherits No New Port Capability, Profile Export and Import Routes)
 
-- [ ] 5.1 Create `src/pages/admin/api/profile/export.ts` — authenticated GET handler, returns `buildMarkdownFile()`'s output for the current profile as a downloadable file (byte-identical to a normal edit's write)
-- [ ] 5.2 Create `src/pages/admin/api/profile/import.ts` — POST handler (file upload): `request.formData()` → `file.text()` → `parseFrontmatterBlock()` → `parseFrontmatter("profile", ...)` → `ContentWriter.create`/`.edit()`; invalid upload re-renders with a validation error, no write occurs
-- [ ] 5.3 Add export/import entry points to `src/pages/admin/profile/edit.astro` (download link + upload form)
-- [ ] 5.4 **Full-cycle real verification (carry-forward, continued from 4.3):** against a real running server/adapter, download via `export.ts`, re-upload the exact downloaded file via `import.ts`, confirm the resulting profile is identical to the original — proves the real export→re-import path, not just the parser in isolation
-- [ ] 5.5 Verify: extend `scripts/verify-admin-server.mjs` (or `verify-frontmatter-round-trip.mjs`) with an end-to-end export/import proof against the real build; actually run it
-- [ ] 5.6 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
-- [ ] 5.7 Commit as one work unit; open PR5 → PR4 branch (final child; cascades to tracker → main)
+- [x] 5.1 Create `src/pages/admin/api/profile/export.ts` — authenticated GET handler, returns `buildMarkdownFile()`'s output for the current profile as a downloadable file (byte-identical to a normal edit's write)
+- [x] 5.2 Create `src/pages/admin/api/profile/import.ts` — POST handler (file upload): `request.formData()` → `file.text()` → `parseFrontmatterBlock()` → `parseFrontmatter("profile", ...)` → `ContentWriter.create`/`.edit()`; invalid upload re-renders with a validation error, no write occurs
+- [x] 5.3 Add export/import entry points to `src/pages/admin/profile/edit.astro` (download link + upload form)
+- [x] 5.4 **Full-cycle real verification (carry-forward, continued from 4.3):** against a real running server/adapter, download via `export.ts`, re-upload the exact downloaded file via `import.ts`, confirm the resulting profile is identical to the original — proves the real export→re-import path, not just the parser in isolation
+- [x] 5.5 Verify: extend `scripts/verify-admin-server.mjs` (or `verify-frontmatter-round-trip.mjs`) with an end-to-end export/import proof against the real build; actually run it
+- [x] 5.6 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
+- [x] 5.7 Commit as one work unit; open PR5 → PR4 branch (final child; cascades to tracker → main)
 
 ## Next Step
 
-Ready for `sdd-apply`, starting with PR1 (Phase 1). Given `auto-chain`, proceed with Unit 1 without further confirmation; re-check the Review Workload Forecast per-unit estimate as each PR's real diff lands, and confirm Unit 4's estimate in particular once `parseFrontmatterBlock()`'s real size is known.
+All 5 phases complete (46/46 tasks: 13+10+11+5+7). PR1-PR5 opened across the feature-branch-chain (tracker `feature/profile-wizard` → PR1 #61 → PR2 #62 → PR3 #63 → PR4 #64 → PR5 #65). sdd-verify passed (0 CRITICAL, 2 WARNING — both fixed: explicit `profile` guards added to the generic create/delete routes, this count corrected). Ready for merge-and-archive.
