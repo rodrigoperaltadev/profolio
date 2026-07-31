@@ -14,7 +14,12 @@ import { writeErrorMessage } from "../../_lib/write-error-message";
 
 export const POST: APIRoute = async ({ params, request, redirect }) => {
   const collection = parseCollectionParam(params.collection);
-  if (!collection) {
+  // `profile` is excluded here even though `parseCollectionParam` now accepts
+  // it (profile-wizard change, task 2.2): `frontmatterFromFormData()` has no
+  // branch for the profile shape, and the singleton has its own dedicated
+  // create route instead (`/admin/api/profile/create`, Phase 3). Explicit,
+  // not incidental — see sdd-verify's profile-wizard report.
+  if (!collection || collection === "profile") {
     return new Response("Not Found", { status: 404 });
   }
 

@@ -93,4 +93,4 @@ Tracker branch `feature/profile-wizard` (draft, no-merge until all children land
 
 ## Next Step
 
-All 5 phases complete (62/62 tasks). PR1-PR5 opened across the feature-branch-chain (tracker `feature/profile-wizard` → PR1 #61 → PR2 #62 → PR3 #63 → PR4 #64 → PR5). Ready for `sdd-verify`.
+All 5 phases complete (46/46 tasks: 13+10+11+5+7). PR1-PR5 opened across the feature-branch-chain (tracker `feature/profile-wizard` → PR1 #61 → PR2 #62 → PR3 #63 → PR4 #64 → PR5 #65). sdd-verify passed (0 CRITICAL, 2 WARNING — both fixed: explicit `profile` guards added to the generic create/delete routes, this count corrected). Ready for merge-and-archive.
