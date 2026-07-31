@@ -164,5 +164,21 @@ export default tseslint.config(
     files: ["src/env.d.ts"],
     rules: { "@typescript-eslint/triple-slash-reference": "off" },
   },
+  // `getStaticPaths()` in the two detail routes deliberately has no
+  // explicit return-type annotation — Astro's documented
+  // `InferGetStaticPropsType<typeof getStaticPaths>` pattern (see
+  // public-homepage's design.md) depends on TS inferring the literal
+  // `{params, props}` array shape from the function body; annotating the
+  // return type as the ambient `GetStaticPathsResult` widens `props` back
+  // to `any` and makes `Astro.props` untyped, which is worse than the rule
+  // this override relaxes. Scoped to just these two files, not `.astro`
+  // project-wide.
+  {
+    // `[slug]` must be escaped in glob patterns (square brackets are glob
+    // character classes) — verified empirically: the unescaped pattern
+    // silently matched nothing and left the rule enforced.
+    files: ["src/pages/posts/\\[slug\\].astro", "src/pages/projects/\\[slug\\].astro"],
+    rules: { "@typescript-eslint/explicit-function-return-type": "off" },
+  },
   eslintConfigPrettier,
 );

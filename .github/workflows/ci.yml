@@ -54,3 +54,6 @@ jobs:
 
       - name: Public content routes proof (real astro build, home/listing/detail HTML inspection)
         run: npm run verify:public-routes
+
+      - name: Admin listing unfiltered proof (deleted/draft entries still visible in /admin)
+        run: npm run verify:admin-listing
