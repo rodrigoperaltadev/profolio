@@ -1,0 +1,41 @@
+---
+// Public /posts/[slug] detail route — see
+// openspec/changes/public-homepage/design.md's "The getStaticPaths() /
+// .md-suffix risk — resolved" section for the exact getStaticPaths() shape.
+// See the content-listing spec's "Detail Routes via getStaticPaths()" and
+// "Slug Shape Handles the .md-Suffix Entry Id" requirements, and the
+// public-content-visibility spec's "Filter Applied at /posts/[slug]'s
+// getStaticPaths()" requirement.
+export const prerender = true;
+import { getCollection } from "astro:content";
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import Layout from "../../presentation/Layout.astro";
+import TerminalWindow from "../../presentation/brutalist/TerminalWindow.astro";
+import { isPubliclyVisible } from "../../content/visibility";
+import { toContentEntry } from "../../content/_mappers/to-content-entry";
+import { toSlug } from "../../content/slug";
+
+// No explicit return-type annotation here (would satisfy
+// @typescript-eslint/explicit-function-return-type but widen the return
+// type to GetStaticPathsResult's loosely-typed ambient Props, breaking
+// InferGetStaticPropsType's literal inference below and making Astro.props
+// untyped) — see eslint.config.js's matching scoped override.
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("posts");
+  return entries.filter(isPubliclyVisible).map((entry) => ({
+    params: { slug: toSlug(entry.id) },
+    props: { entry: toContentEntry(entry) },
+  }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props;
+---
+<Layout title={entry.title}>
+  <main class="min-h-screen p-4">
+    <TerminalWindow>
+      <h1 class="text-text-primary font-mono">{entry.title}</h1>
+      <pre class="whitespace-pre-wrap font-mono text-text-secondary">{entry.body}</pre>
+    </TerminalWindow>
+  </main>
+</Layout>
