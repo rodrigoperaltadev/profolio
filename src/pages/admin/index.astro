@@ -34,9 +34,21 @@ const groups: CollectionGroup[] = [
 const profile = await getProfile();
 
 const params = Astro.url.searchParams;
+const hasProfileWrite =
+  params.has("profile-created") || params.has("profile-updated") || params.has("profile-reset");
 const showCommitReminder =
   !isPublishingConfigured() &&
-  (params.has("created") || params.has("updated") || params.has("deleted"));
+  (params.has("created") ||
+    params.has("updated") ||
+    params.has("deleted") ||
+    hasProfileWrite);
+// Build/Deploy Detection Lag Disclosure (admin-authoring spec) — in GitHub
+// mode, a just-saved/reset profile won't clear the first-run redirect until
+// the next build/deploy, since `getCollection()`/`getEntry()` only reflect
+// the last deploy. Local-fallback mode reads its own disk writes
+// immediately, so it gets the existing commit reminder above instead, never
+// this notice.
+const showDeployLagNotice = isPublishingConfigured() && hasProfileWrite;
 ---
 
 <html lang="en">
@@ -67,6 +79,16 @@ const showCommitReminder =
         <p role="status">Marked "{params.get("deleted")}" as deleted.</p>
       )
     }
+    {
+      showDeployLagNotice && (
+        <p role="status">
+          Profile saved, but this won't be reflected here until the next build/deploy.
+        </p>
+      )
+    }
+    {params.has("profile-created") && <p role="status">Profile created.</p>}
+    {params.has("profile-updated") && <p role="status">Profile updated.</p>}
+    {params.has("profile-reset") && <p role="status">Profile reset.</p>}
 
     <section>
       <h2>Profile</h2>

@@ -61,17 +61,17 @@ Tracker branch `feature/profile-wizard` (draft, no-merge until all children land
 
 ## Phase 3: Profile Setup/Edit/Reset UI + CRUD Endpoints (Unit 3 — satisfies Profile Setup and Edit UI, Profile Setup and Edit Routes, Reset via Edit [No New Port Method])
 
-- [ ] 3.1 **Resolve the `links` textarea delimiter (carry-forward, decide now, do not leave open):** use `|` — one `label | url` pair per line (e.g. `GitHub | https://github.com/x`), confirming design's assumption; document this in the field's help text
-- [ ] 3.2 RED: `src/pages/admin/_lib/profile-form-fields.test.ts` — parses the `links` textarea per 3.1's delimiter into `{label,url}[]`; blank/empty lines ignored; malformed lines (missing `|`) dropped or reported, not crashing
-- [ ] 3.3 GREEN: create `src/pages/admin/_lib/profile-form-fields.ts` (mirrors `form-fields.ts`'s `splitCommaList` precedent with the extra delimiter)
-- [ ] 3.4 Create `src/pages/admin/profile/setup.astro` — native `<form method="POST">`, shown when no profile exists
-- [ ] 3.5 Create `src/pages/admin/profile/edit.astro` — native form pre-populated with current values, shown once a profile exists; includes the reset action
-- [ ] 3.6 Create `src/pages/admin/api/profile/create.ts` — POST handler, `createContentWriter().create({collection:"profile", slug:"me", ...})`; validation-before-write; re-renders with error on schema failure, no write attempted
-- [ ] 3.7 Create `src/pages/admin/api/profile/edit.ts` — POST handler, `.edit()`; deploy-lag disclosure copy in GitHub mode vs. existing "saved to disk, commit" reminder in local-fallback mode
-- [ ] 3.8 Create `src/pages/admin/api/profile/reset.ts` — POST handler, `.edit()` with all fields blanked; confirm no new `ContentWriter` port method is introduced
-- [ ] 3.9 Verify: manual smoke test via `astro dev` (local-fallback mode) — full setup → edit → reset cycle; confirm the commit reminder appears and the first-run redirect (Unit 2) stops firing after setup
-- [ ] 3.10 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
-- [ ] 3.11 Commit as one work unit; open PR3 → PR2 branch
+- [x] 3.1 **Resolve the `links` textarea delimiter (carry-forward, decide now, do not leave open):** use `|` — one `label | url` pair per line (e.g. `GitHub | https://github.com/x`), confirming design's assumption; document this in the field's help text
+- [x] 3.2 RED: `src/pages/admin/_lib/profile-form-fields.test.ts` — parses the `links` textarea per 3.1's delimiter into `{label,url}[]`; blank/empty lines ignored; malformed lines (missing `|`) dropped or reported, not crashing
+- [x] 3.3 GREEN: create `src/pages/admin/_lib/profile-form-fields.ts` (mirrors `form-fields.ts`'s `splitCommaList` precedent with the extra delimiter)
+- [x] 3.4 Create `src/pages/admin/profile/setup.astro` — native `<form method="POST">`, shown when no profile exists
+- [x] 3.5 Create `src/pages/admin/profile/edit.astro` — native form pre-populated with current values, shown once a profile exists; includes the reset action
+- [x] 3.6 Create `src/pages/admin/api/profile/create.ts` — POST handler, `createContentWriter().create({collection:"profile", slug:"me", ...})`; validation-before-write; re-renders with error on schema failure, no write attempted
+- [x] 3.7 Create `src/pages/admin/api/profile/edit.ts` — POST handler, `.edit()`; deploy-lag disclosure copy in GitHub mode vs. existing "saved to disk, commit" reminder in local-fallback mode
+- [x] 3.8 Create `src/pages/admin/api/profile/reset.ts` — POST handler, `.edit()` with all fields blanked; confirm no new `ContentWriter` port method is introduced
+- [x] 3.9 Verify: manual smoke test via `astro dev` (local-fallback mode) — full setup → edit → reset cycle; confirm the commit reminder appears and the first-run redirect (Unit 2) stops firing after setup
+- [x] 3.10 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint`, `npm run build` all exit 0
+- [x] 3.11 Commit as one work unit; open PR3 → PR2 branch
 
 ## Phase 4: `parseFrontmatterBlock()` Import Parser Module (Unit 4 — satisfies groundwork for Import Runs Through the Same Validation-Before-Write Path)
 
