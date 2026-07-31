@@ -11,7 +11,7 @@
 // `exactOptionalPropertyTypes` rejects for a `Record<Collection, ZodObject>`
 // lookup — see apply-progress's Phase 3 deviation note). The validated data
 // is widened to `Record<string, unknown>` only after validation succeeds.
-import { postsSchema, projectsSchema } from "../content/schemas";
+import { postsSchema, profileSchema, projectsSchema } from "../content/schemas";
 import { parseEntry, type ParseResult } from "../content/validate-entry";
 import type { Collection } from "./content-writer";
 
@@ -19,9 +19,19 @@ export function parseFrontmatter(
   collection: Collection,
   frontmatter: Record<string, unknown>,
 ): ParseResult<Record<string, unknown>> {
-  const result =
-    collection === "posts"
-      ? parseEntry(postsSchema, frontmatter)
-      : parseEntry(projectsSchema, frontmatter);
+  // if/else if/else (not a `Record<Collection, ZodObject>` lookup table) —
+  // each branch's own `parseEntry()` call lets TS infer that branch's
+  // concrete output type independently, which is what makes this compile
+  // under `exactOptionalPropertyTypes` (see design.md's Architecture
+  // Decisions: "parseFrontmatter() widening"; a lookup table was already
+  // rejected for this reason).
+  let result;
+  if (collection === "posts") {
+    result = parseEntry(postsSchema, frontmatter);
+  } else if (collection === "projects") {
+    result = parseEntry(projectsSchema, frontmatter);
+  } else {
+    result = parseEntry(profileSchema, frontmatter);
+  }
   return result.ok ? { ok: true, data: result.data } : result;
 }

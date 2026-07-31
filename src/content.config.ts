@@ -8,9 +8,10 @@
 // legacy `type: "content"` shape design.md chose is still valid, only the
 // file location changed. See apply-progress for the full gotcha writeup.
 import { defineCollection } from "astro:content";
-import { postsSchema, projectsSchema } from "./content/schemas";
+import { postsSchema, profileSchema, projectsSchema } from "./content/schemas";
 
 export const collections = {
   posts: defineCollection({ type: "content", schema: postsSchema }),
   projects: defineCollection({ type: "content", schema: projectsSchema }),
+  profile: defineCollection({ type: "content", schema: profileSchema }),
 };
