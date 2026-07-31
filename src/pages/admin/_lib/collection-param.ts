@@ -1,16 +1,21 @@
-// Validates the `[collection]` dynamic route param against the two
-// registered collections — the one place this admin surface enumerates them
-// by name, matching `to-content-entry.ts`'s own `mappers` dispatch table
-// precedent (see design.md's Architecture Decisions).
+// Validates the `[collection]` dynamic route param against the registered
+// collections — the one place this admin surface enumerates them by name,
+// matching `to-content-entry.ts`'s own `mappers` dispatch table precedent
+// (see design.md's Architecture Decisions).
 //
-// Return type is deliberately narrowed to exclude "profile": `Collection`
-// widened to include it in Phase 1 (profile-wizard), but this param parser
-// itself isn't widened until Phase 2 (see tasks.md's task 2.2) — narrowing
-// here keeps that phase boundary real instead of just a documentation claim.
+// Widened to accept "profile" for parity with `Collection` (see design.md's
+// "`parseCollectionParam` widening" decision): profile's own dedicated
+// setup/edit/reset/export/import routes (Phase 3+) never call this parser —
+// they hardcode `collection: "profile", slug: "me"` — but leaving it at two
+// values would let it silently drift out of sync with the type it exists to
+// validate, the exact "partial widening" risk this change's proposal flagged.
+// NOTE: this does not, by itself, let the generic `/admin/api/[collection]/
+// create` route produce a valid profile entry — `frontmatterFromFormData()`
+// has no "profile" case, so it can never assemble a schema-valid profile
+// frontmatter, and `ContentWriter.create()`'s validation-before-write still
+// rejects whatever it does produce.
 import type { Collection } from "../../../publishing/content-writer";
 
-type PostsOrProjects = Exclude<Collection, "profile">;
-
-export function parseCollectionParam(value: string | undefined): PostsOrProjects | null {
-  return value === "posts" || value === "projects" ? value : null;
+export function parseCollectionParam(value: string | undefined): Collection | null {
+  return value === "posts" || value === "projects" || value === "profile" ? value : null;
 }

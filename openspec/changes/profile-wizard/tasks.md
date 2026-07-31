@@ -48,16 +48,16 @@ Tracker branch `feature/profile-wizard` (draft, no-merge until all children land
 
 ## Phase 2: Admin Routing Widening + First-Run Redirect (Unit 2 — satisfies First-Run Profile Redirect [Both Publishing Modes], Build/Deploy Detection Lag Disclosure)
 
-- [ ] 2.1 RED: `src/pages/admin/_lib/collection-param.test.ts` — `parseCollectionParam` accepts `"profile"`
-- [ ] 2.2 GREEN: widen `collection-param.ts` to accept `"profile"` alongside the existing two values
-- [ ] 2.3 RED: `src/config/admin-first-run.test.ts` — `isFirstRunExemptPath()` true for `/admin/profile/setup` and login paths, false otherwise; `shouldRedirectToProfileSetup(profileExists)` true/false — pure, plain-value tests
-- [ ] 2.4 GREEN: create `src/config/admin-first-run.ts` — `isFirstRunExemptPath()`, `shouldRedirectToProfileSetup()`, per design's Interfaces/Contracts
-- [ ] 2.5 Wire `src/middleware.ts`: after the existing `checkAdminAuth()` branch passes, for GET requests where `isFirstRunExemptPath()` is false, call `getProfile()` and redirect 303 to `/admin/profile/setup` when `shouldRedirectToProfileSetup()` is true (no dedicated unit test, same precedent as the existing auth-gate wiring — proven by 2.8's real-server script)
-- [ ] 2.6 Modify `src/pages/admin/index.astro`: add a separate profile summary block calling `getProfile()` directly, rendering a setup/edit entry point — alongside, not inside, the existing `groups`/`CollectionSection` loop
-- [ ] 2.7 **Cross-check task (mandatory, carry-forward):** inspect `Collection` (1.6), `parseCollectionParam` (2.2), and `admin/index.astro`'s `groups` enumeration + new profile block (2.6) together — confirm all three touch points recognize/handle `"profile"` consistently and no partial widening slipped through; note the result in the PR description
-- [ ] 2.8 **Real-server verification (carry-forward, mandatory — both modes):** extend `scripts/verify-admin-server.mjs` with `proveFirstRunRedirect*()` — (a) fresh state, no profile: GET to an arbitrary `/admin/**` path (not only `/admin` itself) redirects to setup, in full mode after auth passes; (b) after profile creation/seeding: redirect stops firing, edit entry point reachable; (c) local-fallback mode: redirect fires unconditionally with no login event involved — actually run it, not author-and-assume
-- [ ] 2.9 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint` all exit 0; boundaries hold
-- [ ] 2.10 Commit as one work unit; open PR2 → PR1 branch
+- [x] 2.1 RED: `src/pages/admin/_lib/collection-param.test.ts` — `parseCollectionParam` accepts `"profile"`
+- [x] 2.2 GREEN: widen `collection-param.ts` to accept `"profile"` alongside the existing two values
+- [x] 2.3 RED: `src/config/admin-first-run.test.ts` — `isFirstRunExemptPath()` true for `/admin/profile/setup` and login paths, false otherwise; `shouldRedirectToProfileSetup(profileExists)` true/false — pure, plain-value tests
+- [x] 2.4 GREEN: create `src/config/admin-first-run.ts` — `isFirstRunExemptPath()`, `shouldRedirectToProfileSetup()`, per design's Interfaces/Contracts
+- [x] 2.5 Wire `src/middleware.ts`: after the existing `checkAdminAuth()` branch passes, for GET requests where `isFirstRunExemptPath()` is false, call `getProfile()` and redirect 303 to `/admin/profile/setup` when `shouldRedirectToProfileSetup()` is true (no dedicated unit test, same precedent as the existing auth-gate wiring — proven by 2.8's real-server script)
+- [x] 2.6 Modify `src/pages/admin/index.astro`: add a separate profile summary block calling `getProfile()` directly, rendering a setup/edit entry point — alongside, not inside, the existing `groups`/`CollectionSection` loop
+- [x] 2.7 **Cross-check task (mandatory, carry-forward):** inspect `Collection` (1.6), `parseCollectionParam` (2.2), and `admin/index.astro`'s `groups` enumeration + new profile block (2.6) together — confirm all three touch points recognize/handle `"profile"` consistently and no partial widening slipped through; note the result in the PR description
+- [x] 2.8 **Real-server verification (carry-forward, mandatory — both modes):** extend `scripts/verify-admin-server.mjs` with `proveFirstRunRedirect*()` — (a) fresh state, no profile: GET to an arbitrary `/admin/**` path (not only `/admin` itself) redirects to setup, in full mode after auth passes; (b) after profile creation/seeding: redirect stops firing, edit entry point reachable; (c) local-fallback mode: redirect fires unconditionally with no login event involved — actually run it, not author-and-assume
+- [x] 2.9 Verify: `npm run test` (coverage), `npm run typecheck`, `npm run lint` all exit 0; boundaries hold
+- [x] 2.10 Commit as one work unit; open PR2 → PR1 branch
 
 ## Phase 3: Profile Setup/Edit/Reset UI + CRUD Endpoints (Unit 3 — satisfies Profile Setup and Edit UI, Profile Setup and Edit Routes, Reset via Edit [No New Port Method])
 

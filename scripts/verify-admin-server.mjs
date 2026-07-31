@@ -17,7 +17,7 @@
 // that directly, as a build-time complement to the manual `curl -u` check
 // against a real running server (see tasks.md 3.6).
 import { execFileSync, spawn } from "node:child_process";
-import { rmSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
@@ -40,6 +40,25 @@ const ADMIN_TOKEN = "fake-verify-admin-token";
 const LOCKOUT_THRESHOLD = 5;
 const LOGIN_PATH = "/admin/login";
 const SET_COOKIE_HEADER = "set-cookie";
+
+// profile-wizard first-run redirect proofs (task 2.8) — a non-"/admin" path
+// deliberately proves the check isn't hardcoded to the index route.
+const PROFILE_SETUP_PATH = "/admin/profile/setup";
+const ARBITRARY_ADMIN_PATH = "/admin/posts/new";
+const PROFILE_DIR = `${rootDir}/src/content/profile`;
+const PROFILE_ENTRY_PATH = `${PROFILE_DIR}/me.md`;
+const profileDirPreexisted = existsSync(PROFILE_DIR);
+// Minimal, valid `profileSchema` frontmatter — `links` uses its schema
+// default (`[]`) by omission, kept out of scope for this proof.
+const SAMPLE_PROFILE_MARKDOWN = [
+  "---",
+  'name: "Ada Lovelace"',
+  'role: "Software Engineer"',
+  'bio: "Building things with Astro."',
+  'email: "ada@example.com"',
+  "---",
+  "",
+].join("\n");
 
 function cleanAstroBuildState() {
   rmSync(`${rootDir}/.astro`, { recursive: true, force: true });
@@ -120,9 +139,22 @@ async function fetchWithRetry(url, options) {
 
 // `redirect: "manual"` so the gate's real 303 (and its `Location`) is
 // observable directly, instead of silently following it into whatever page
-// it points at.
-async function requestAdmin(headers) {
-  return fetchWithRetry(`${BASE_URL}/admin`, { headers, redirect: "manual" });
+// it points at. `pathname` defaults to "/admin" for the existing auth-gate
+// proofs; the first-run redirect proofs below pass other admin paths.
+async function requestAdmin(headers, pathname = "/admin") {
+  return fetchWithRetry(`${BASE_URL}${pathname}`, { headers, redirect: "manual" });
+}
+
+function seedProfileEntry() {
+  mkdirSync(PROFILE_DIR, { recursive: true });
+  writeFileSync(PROFILE_ENTRY_PATH, SAMPLE_PROFILE_MARKDOWN);
+}
+
+function removeProfileEntry() {
+  rmSync(PROFILE_ENTRY_PATH, { force: true });
+  if (!profileDirPreexisted) {
+    rmSync(PROFILE_DIR, { recursive: true, force: true });
+  }
 }
 
 async function postLogin(secret) {
@@ -149,16 +181,22 @@ function cookiePairFromSetCookie(setCookieHeader) {
   return setCookieHeader.split(";")[0].trim();
 }
 
+// profile-wizard fallout: with no `src/content/profile/me.md`, local-fallback
+// mode now legitimately 303s to `PROFILE_SETUP_PATH` too (the first-run
+// redirect, proven separately below) — so this proof narrows its assertion
+// to "no AUTH-gate challenge specifically" (no 401, no redirect to
+// `LOGIN_PATH`) rather than "no redirect at all", which the new spec
+// requirement makes no longer true.
 async function proveLocalFallbackBypass() {
   const server = await startServer({});
   try {
     const response = await requestAdmin({});
     assertProof(
-      response.status !== 401 && response.status !== 303,
-      `expected no gate (no redirect, no 401) with no publishing env vars, got ${response.status}`,
+      response.status !== 401 && response.headers.get("location") !== LOGIN_PATH,
+      `expected no auth gate (no 401, no redirect to ${LOGIN_PATH}) with no publishing env vars, got ${response.status} / ${response.headers.get("location")}`,
     );
     console.log(
-      `[admin-server-proof] local-fallback bypass: no publishing env vars → ${response.status} (no gate) — OK`,
+      `[admin-server-proof] local-fallback bypass: no publishing env vars → ${response.status} (no auth gate) — OK`,
     );
   } finally {
     await stopServer(server);
@@ -196,9 +234,12 @@ async function proveLoginIssuesSessionThatUnlocksAdmin() {
 
     const cookie = cookiePairFromSetCookie(setCookie);
     const protectedResponse = await requestAdmin({ cookie });
+    // profile-wizard fallout: a valid session may still legitimately 303 to
+    // PROFILE_SETUP_PATH (first-run redirect, no profile seeded here) — this
+    // proof only asserts the session itself isn't rejected by the auth gate.
     assertProof(
-      protectedResponse.status !== 401 && protectedResponse.status !== 303,
-      `expected the issued session cookie to grant access to /admin, got ${protectedResponse.status}`,
+      protectedResponse.status !== 401 && protectedResponse.headers.get("location") !== LOGIN_PATH,
+      `expected the issued session cookie to grant access to /admin, got ${protectedResponse.status} / ${protectedResponse.headers.get("location")}`,
     );
     console.log(
       `[admin-server-proof] session cookie on next request → ${protectedResponse.status} (allowed) — OK`,
@@ -261,6 +302,78 @@ async function proveOldBasicAuthMechanismIsDead() {
   }
 }
 
+// (a)+(c) shared shape for "no profile" across both modes: (a) full mode
+// authenticates first, then asserts the redirect; (c) local-fallback mode
+// has no login step at all — `getHeaders` captures that difference per mode.
+async function proveFirstRunRedirectNoProfile(envOverrides, getHeaders, modeLabel) {
+  const server = await startServer(envOverrides);
+  try {
+    const headers = await getHeaders();
+    const response = await requestAdmin(headers, ARBITRARY_ADMIN_PATH);
+    assertProof(
+      response.status === 303 && response.headers.get("location") === PROFILE_SETUP_PATH,
+      `expected ${modeLabel} GET ${ARBITRARY_ADMIN_PATH} with no profile to redirect (303) to ${PROFILE_SETUP_PATH}, got ${response.status} / ${response.headers.get("location")}`,
+    );
+    console.log(`[admin-server-proof] ${modeLabel}, no profile: GET → ${PROFILE_SETUP_PATH} — OK`);
+  } finally {
+    await stopServer(server);
+  }
+}
+
+async function authenticatedCookieHeaders() {
+  const loginResponse = await postLogin(ADMIN_TOKEN);
+  return { cookie: cookiePairFromSetCookie(loginResponse.headers.get(SET_COOKIE_HEADER)) };
+}
+
+// The setup page itself must stay reachable — otherwise the redirect traps.
+async function proveFirstRunRedirectExemptsItsOwnSetupPage() {
+  const server = await startServer({});
+  try {
+    const response = await requestAdmin({}, PROFILE_SETUP_PATH);
+    assertProof(
+      response.status !== 303,
+      `expected ${PROFILE_SETUP_PATH} itself to be exempt from its own redirect, got ${response.status}`,
+    );
+    console.log(`[admin-server-proof] ${PROFILE_SETUP_PATH} is exempt from its own redirect — OK`);
+  } finally {
+    await stopServer(server);
+  }
+}
+
+// (b) once a profile exists, the redirect stops and an edit entry point is
+// exposed. Needs its own build cycle (content is computed at build time) —
+// see verify-frontmatter-round-trip.mjs's same pattern.
+async function proveFirstRunRedirectStopsOnceProfileExists() {
+  seedProfileEntry();
+  try {
+    cleanAstroBuildState();
+    runAstroBuild();
+    const server = await startServer({ ...PUBLISHING_ENV, ADMIN_ACCESS_TOKEN: ADMIN_TOKEN });
+    try {
+      const loginResponse = await postLogin(ADMIN_TOKEN);
+      const cookie = cookiePairFromSetCookie(loginResponse.headers.get(SET_COOKIE_HEADER));
+      const response = await requestAdmin({ cookie });
+      assertProof(
+        response.status !== 303,
+        `expected /admin to load normally once a profile exists, got ${response.status}`,
+      );
+      const html = await response.text();
+      assertProof(
+        html.includes("/admin/profile/edit"),
+        "expected /admin to expose an edit-profile entry point once a profile exists",
+      );
+      console.log(
+        "[admin-server-proof] once a profile exists: first-run redirect stops firing and an edit entry point is exposed — OK",
+      );
+    } finally {
+      await stopServer(server);
+    }
+  } finally {
+    removeProfileEntry();
+    cleanAstroBuildState();
+  }
+}
+
 async function main() {
   cleanAstroBuildState();
   runAstroBuild();
@@ -271,9 +384,18 @@ async function main() {
     await proveLoginIssuesSessionThatUnlocksAdmin();
     await proveLockoutAfterFiveFailedAttempts();
     await proveOldBasicAuthMechanismIsDead();
+    await proveFirstRunRedirectNoProfile(
+      { ...PUBLISHING_ENV, ADMIN_ACCESS_TOKEN: ADMIN_TOKEN },
+      authenticatedCookieHeaders,
+      "full mode, authenticated",
+    );
+    await proveFirstRunRedirectNoProfile({}, () => ({}), "local-fallback mode, unauthenticated");
+    await proveFirstRunRedirectExemptsItsOwnSetupPage();
   } finally {
     cleanAstroBuildState();
   }
+
+  await proveFirstRunRedirectStopsOnceProfileExists();
 
   console.log("[admin-server-proof] all admin access gate proofs passed");
 }
